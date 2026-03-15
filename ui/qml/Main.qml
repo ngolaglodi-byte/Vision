@@ -816,6 +816,7 @@ ApplicationWindow {
 
                 ShortcutRow { shortcut: "Ctrl+S"; description: "Save Project" }
                 ShortcutRow { shortcut: "Ctrl+O"; description: "Open Project" }
+                ShortcutRow { shortcut: "Ctrl+E"; description: "Export Settings" }
                 ShortcutRow { shortcut: "Ctrl+,"; description: "Settings" }
                 ShortcutRow { shortcut: "F1"; description: "Help" }
                 ShortcutRow { shortcut: "Ctrl+Q"; description: "Quit" }
