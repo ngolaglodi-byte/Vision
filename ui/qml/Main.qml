@@ -19,79 +19,162 @@ ApplicationWindow {
     title: "VisionCast-AI — Broadcast Control Room"
     color: "#0D1117"
 
-  // == Menu bar modernisée (QtQuick Controls 2 compatible) ==
-menuBar: Rectangle {
-    height: 40
-    color: "#161B22"
-    border.color: "#30363D"
-    border.width: 1
+    // == Menu bar modernisée (QtQuick Controls 2 compatible) ==
+    // == Professional broadcast-level menu system ==
+    menuBar: Rectangle {
+        height: 40
+        color: "#161B22"
+        border.color: "#30363D"
+        border.width: 1
 
-    Row {
-        anchors.fill: parent
-        anchors.leftMargin: 16
-        spacing: 32
+        Row {
+            anchors.fill: parent
+            anchors.leftMargin: 16
+            spacing: 24
 
-        // ==== FILE ====
-        VCSectionHeader {
-            title: "File"
-            onClicked: fileMenu.open()
-        }
-        Menu {
-            id: fileMenu
-            MenuItem { text: "Import Project..."; onTriggered: bridge.importProject() }
-            MenuItem { text: "Export Project..."; onTriggered: bridge.exportProject() }
-            MenuSeparator {}
-            MenuItem { text: "Settings..."; onTriggered: settingsDialog.open() }
-            MenuItem { text: "Exit"; onTriggered: Qt.quit() }
-        }
-
-        // ==== VIEW ====
-        VCSectionHeader {
-            title: "View"
-            onClicked: viewMenu.open()
-        }
-        Menu {
-            id: viewMenu
-            MenuItem {
-                text: "Show Monitoring"
-                checkable: true
-                checked: true
-                onToggled: bottomBar.visible = checked
+            // ==== CHANNEL ====
+            VCSectionHeader {
+                title: "Channel"
+                onClicked: channelMenu.open()
             }
-            MenuItem {
-                text: "Dark/Light Theme"
-                checkable: true
-                checked: true
-                onToggled: bridge.setTheme(checked ? "Dark" : "Light")
+            Menu {
+                id: channelMenu
+                MenuItem { text: "New Channel Profile"; onTriggered: bridge.newChannelProfile() }
+                MenuItem { text: "Load Channel Profile..."; onTriggered: bridge.loadChannelProfile() }
+                MenuItem { text: "Save Channel Profile"; onTriggered: bridge.saveChannelProfile() }
+                MenuSeparator {}
+                MenuItem { text: "Export Settings..."; onTriggered: bridge.exportProject() }
+                MenuSeparator {}
+                MenuItem { text: "Exit"; onTriggered: Qt.quit() }
             }
-        }
 
-        // ==== BROADCAST ====
-        VCSectionHeader {
-            title: "Broadcast"
-            onClicked: broadcastMenu.open()
-        }
-        Menu {
-            id: broadcastMenu
-            MenuItem { text: "Start Engine"; onTriggered: bridge.startEngine() }
-            MenuItem { text: "Stop Engine";  onTriggered: bridge.stopEngine() }
-            MenuSeparator {}
-            MenuItem { text: "Go Live";      onTriggered: bridge.goLive() }
-            MenuItem { text: "Stop";         onTriggered: bridge.stopBroadcast() }
-        }
+            // ==== BROADCAST SETTINGS ====
+            VCSectionHeader {
+                title: "Broadcast"
+                onClicked: broadcastSettingsMenu.open()
+            }
+            Menu {
+                id: broadcastSettingsMenu
+                MenuItem { text: "Video Engine"; onTriggered: bridge.openVideoEngineSettings() }
+                MenuItem { text: "Audio Routing"; onTriggered: bridge.openAudioRoutingSettings() }
+                MenuSeparator {}
+                MenuItem { text: "DeckLink / SDI"; onTriggered: bridge.openDeckLinkSettings() }
+                MenuItem { text: "NDI"; onTriggered: bridge.openNdiSettings() }
+                MenuItem { text: "SRT / RTMP Inputs"; onTriggered: bridge.openSrtRtmpInputSettings() }
+                MenuSeparator {}
+                MenuItem { text: "Output Routing"; onTriggered: bridge.openOutputRoutingSettings() }
+                MenuSeparator {}
+                MenuItem { text: "Start Engine"; onTriggered: bridge.startEngine() }
+                MenuItem { text: "Stop Engine"; onTriggered: bridge.stopEngine() }
+                MenuSeparator {}
+                MenuItem { text: "Go Live"; onTriggered: bridge.goLive() }
+                MenuItem { text: "Stop Broadcast"; onTriggered: bridge.stopBroadcast() }
+            }
 
-        // ==== HELP ====
-        VCSectionHeader {
-            title: "Help"
-            onClicked: helpMenu.open()
-        }
-        Menu {
-            id: helpMenu
-            MenuItem { text: "Documentation"; onTriggered: Qt.openUrlExternally("https://visioncast.prestige.tech/docs") }
-            MenuItem { text: "About"; onTriggered: aboutDialog.open() }
+            // ==== AI & AUTOMATION ====
+            VCSectionHeader {
+                title: "AI"
+                onClicked: aiMenu.open()
+            }
+            Menu {
+                id: aiMenu
+                MenuItem { text: "Face Recognition"; onTriggered: bridge.openFaceRecognitionSettings() }
+                MenuItem { text: "Talent Database"; onTriggered: bridge.openTalentDatabase() }
+                MenuSeparator {}
+                MenuItem { text: "Auto-Overlay Rules"; onTriggered: bridge.openAutoOverlayRules() }
+                MenuItem { text: "AI Diagnostics"; onTriggered: bridge.openAiDiagnostics() }
+            }
+
+            // ==== GRAPHICS & DESIGN ====
+            VCSectionHeader {
+                title: "Graphics"
+                onClicked: graphicsMenu.open()
+            }
+            Menu {
+                id: graphicsMenu
+                MenuItem { text: "Overlay Templates"; onTriggered: bridge.openOverlayTemplates() }
+                MenuItem { text: "Lower-Third Editor"; onTriggered: bridge.openLowerThirdEditor() }
+                MenuItem { text: "Branding"; onTriggered: bridge.openBrandingSettings() }
+                MenuSeparator {}
+                MenuItem { text: "LUT Manager"; onTriggered: bridge.openLutManager() }
+                MenuItem { text: "Effects Pipeline"; onTriggered: bridge.openEffectsPipeline() }
+                MenuSeparator {}
+                MenuItem { text: "Theme Settings..."; onTriggered: settingsDialog.open() }
+            }
+
+            // ==== STREAMING ====
+            VCSectionHeader {
+                title: "Streaming"
+                onClicked: streamingMenu.open()
+            }
+            Menu {
+                id: streamingMenu
+                MenuItem { text: "YouTube Setup"; onTriggered: bridge.openYouTubeSetup() }
+                MenuItem { text: "Facebook Setup"; onTriggered: bridge.openFacebookSetup() }
+                MenuItem { text: "Twitch Setup"; onTriggered: bridge.openTwitchSetup() }
+                MenuSeparator {}
+                MenuItem { text: "RTMP Profiles"; onTriggered: bridge.openRtmpProfiles() }
+                MenuItem { text: "Multi-Stream Presets"; onTriggered: bridge.openMultiStreamPresets() }
+                MenuSeparator {}
+                MenuItem { text: "Encoder Settings"; onTriggered: bridge.openEncoderSettings() }
+            }
+
+            // ==== TOOLS ====
+            VCSectionHeader {
+                title: "Tools"
+                onClicked: toolsMenu.open()
+            }
+            Menu {
+                id: toolsMenu
+                MenuItem { text: "System Monitor"; onTriggered: bridge.openSystemMonitor() }
+                MenuItem { text: "Network Diagnostics"; onTriggered: bridge.openNetworkDiagnostics() }
+                MenuSeparator {}
+                MenuItem { text: "Log Viewer"; onTriggered: bridge.openLogViewer() }
+                MenuItem { text: "Backup / Restore"; onTriggered: bridge.openBackupRestore() }
+            }
+
+            // ==== VIEW ====
+            VCSectionHeader {
+                title: "View"
+                onClicked: viewMenu.open()
+            }
+            Menu {
+                id: viewMenu
+                MenuItem {
+                    text: "Show Monitoring"
+                    checkable: true
+                    checked: true
+                    onToggled: bottomBar.visible = checked
+                }
+                MenuItem {
+                    text: "Show Left Panel"
+                    checkable: true
+                    checked: true
+                    onToggled: leftAccordionMenu.visible = checked
+                }
+                MenuSeparator {}
+                MenuItem {
+                    text: "Dark/Light Theme"
+                    checkable: true
+                    checked: true
+                    onToggled: bridge.setTheme(checked ? "Dark" : "Light")
+                }
+            }
+
+            // ==== HELP ====
+            VCSectionHeader {
+                title: "Help"
+                onClicked: helpMenu.open()
+            }
+            Menu {
+                id: helpMenu
+                MenuItem { text: "User Manual"; onTriggered: Qt.openUrlExternally("https://visioncast.prestige.tech/docs") }
+                MenuItem { text: "Shortcuts"; onTriggered: shortcutsDialog.open() }
+                MenuSeparator {}
+                MenuItem { text: "About VisionCast-AI"; onTriggered: aboutDialog.open() }
+            }
         }
     }
-}
 
     // ---- Notification toast ----
     property string _toastMsg:   ""
@@ -279,6 +362,30 @@ menuBar: Rectangle {
                             sectionTitle: "Output"
                             expandedHeight: 250
                             panelComponent: Component { OutputPanel { } }
+                        }
+
+                        // ✨ Effects
+                        AccordionSection {
+                            sectionIcon: "✨"
+                            sectionTitle: "Effects"
+                            expandedHeight: 350
+                            panelComponent: Component { EffectsPanel { } }
+                        }
+
+                        // ⚙️ Settings
+                        AccordionSection {
+                            sectionIcon: "⚙️"
+                            sectionTitle: "Settings"
+                            expandedHeight: 380
+                            panelComponent: Component { SettingsPanel { } }
+                        }
+
+                        // ℹ️ About
+                        AccordionSection {
+                            sectionIcon: "ℹ️"
+                            sectionTitle: "About"
+                            expandedHeight: 280
+                            panelComponent: Component { AboutPanel { } }
                         }
                     }
                 }
@@ -601,6 +708,164 @@ menuBar: Rectangle {
         onAccepted: {
             bridge.setTheme(settingsDialog.selectedTheme)
             bridge.setAccentColor(settingsDialog.selectedAccent)
+        }
+    }
+
+    // == Shortcuts dialog ==
+    Dialog {
+        id: shortcutsDialog
+        title: "Keyboard Shortcuts"
+        modal: true
+        anchors.centerIn: parent
+        width: 520
+        height: 480
+
+        background: Rectangle {
+            color: "#161B22"
+            radius: 10
+            border.color: "#30363D"
+            border.width: 1
+        }
+
+        header: Rectangle {
+            height: 48
+            color: "#1C2128"
+            radius: 10
+            Rectangle {
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 1
+                color: "#30363D"
+            }
+            Text {
+                text: "Keyboard Shortcuts"
+                color: "#E6EDF3"
+                font.pixelSize: 14
+                font.weight: Font.Bold
+                anchors.left: parent.left
+                anchors.leftMargin: 16
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        contentItem: Flickable {
+            anchors.fill: parent
+            anchors.margins: 16
+            contentHeight: shortcutsColumn.height
+            clip: true
+
+            Column {
+                id: shortcutsColumn
+                width: parent.width
+                spacing: 12
+
+                // Broadcast controls
+                Text {
+                    text: "BROADCAST CONTROLS"
+                    color: "#8B949E"
+                    font.pixelSize: 10
+                    font.weight: Font.Bold
+                    font.letterSpacing: 1.0
+                }
+
+                ShortcutRow { shortcut: "F5"; description: "Start Engine" }
+                ShortcutRow { shortcut: "F6"; description: "Stop Engine" }
+                ShortcutRow { shortcut: "F7"; description: "Go Live" }
+                ShortcutRow { shortcut: "F8"; description: "Stop Broadcast" }
+
+                Rectangle { width: parent.width; height: 1; color: "#30363D" }
+
+                // Sources
+                Text {
+                    text: "SOURCES"
+                    color: "#8B949E"
+                    font.pixelSize: 10
+                    font.weight: Font.Bold
+                    font.letterSpacing: 1.0
+                }
+
+                ShortcutRow { shortcut: "1-9"; description: "Select Source 1-9" }
+                ShortcutRow { shortcut: "Space"; description: "Take / Cut" }
+                ShortcutRow { shortcut: "Enter"; description: "Transition" }
+
+                Rectangle { width: parent.width; height: 1; color: "#30363D" }
+
+                // Overlays
+                Text {
+                    text: "OVERLAYS"
+                    color: "#8B949E"
+                    font.pixelSize: 10
+                    font.weight: Font.Bold
+                    font.letterSpacing: 1.0
+                }
+
+                ShortcutRow { shortcut: "Ctrl+1-5"; description: "Toggle Overlay 1-5" }
+                ShortcutRow { shortcut: "Ctrl+0"; description: "Clear All Overlays" }
+
+                Rectangle { width: parent.width; height: 1; color: "#30363D" }
+
+                // General
+                Text {
+                    text: "GENERAL"
+                    color: "#8B949E"
+                    font.pixelSize: 10
+                    font.weight: Font.Bold
+                    font.letterSpacing: 1.0
+                }
+
+                ShortcutRow { shortcut: "Ctrl+S"; description: "Save Project" }
+                ShortcutRow { shortcut: "Ctrl+O"; description: "Open Project" }
+                ShortcutRow { shortcut: "Ctrl+,"; description: "Settings" }
+                ShortcutRow { shortcut: "F1"; description: "Help" }
+                ShortcutRow { shortcut: "Ctrl+Q"; description: "Quit" }
+            }
+        }
+
+        footer: Rectangle {
+            height: 52
+            color: "transparent"
+            VCButton {
+                text: "Close"
+                width: 80; height: 32
+                anchors.right: parent.right
+                anchors.rightMargin: 16
+                anchors.verticalCenter: parent.verticalCenter
+                onClicked: shortcutsDialog.close()
+            }
+        }
+    }
+
+    // == ShortcutRow component ==
+    component ShortcutRow: Row {
+        property string shortcut: ""
+        property string description: ""
+        spacing: 12
+        width: parent ? parent.width : 400
+
+        Rectangle {
+            width: 80
+            height: 24
+            radius: 4
+            color: "#21262D"
+            border.color: "#30363D"
+            border.width: 1
+
+            Text {
+                anchors.centerIn: parent
+                text: shortcut
+                color: "#58A6FF"
+                font.pixelSize: 11
+                font.family: "JetBrains Mono, Cascadia Code, monospace"
+                font.weight: Font.Medium
+            }
+        }
+
+        Text {
+            text: description
+            color: "#E6EDF3"
+            font.pixelSize: 12
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 }
