@@ -1,0 +1,180 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master", "develop"]
+  pull_request:
+    branches: ["main", "master", "develop"]
+
+# Restrict default token permissions for all jobs.
+permissions:
+  contents: read
+
+jobs:
+  lint-python:
+    name: Python lint (flake8)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install flake8
+        run: pip install flake8
+
+      - name: Run flake8
+        run: |
+          flake8 python/ \
+            --max-line-length=99 \
+            --extend-ignore=E203,W503 \
+            --exclude=python/.venv,python/venv,python/__pycache__
+
+  validate-json:
+    name: Validate JSON files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check all JSON files are valid
+        run: |
+          find . -name "*.json" \
+            -not -path "./.git/*" \
+            -not -path "./node_modules/*" \
+            | while read f; do
+                python3 -c "import json, sys; json.load(open('$f'))" \
+                  && echo "OK: $f" \
+                  || { echo "INVALID JSON: $f"; exit 1; }
+              done
+
+  cmake-build:
+    name: CMake build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+          - os: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ------------------------------------------------------------------ #
+      # Ubuntu — install C++ deps from apt                                  #
+      # ------------------------------------------------------------------ #
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            cmake build-essential pkg-config \
+            libopencv-dev \
+            libzmq3-dev \
+            libfreetype6-dev \
+            libglfw3-dev \
+            libglew-dev \
+            libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
+
+      # ------------------------------------------------------------------ #
+      # macOS — install C++ deps from Homebrew                              #
+      # ------------------------------------------------------------------ #
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install pkg-config \
+            opencv zeromq cppzmq freetype glfw glew ffmpeg
+
+      # ------------------------------------------------------------------ #
+      # Windows — install C++ deps via the pre-installed vcpkg              #
+      # ------------------------------------------------------------------ #
+      - name: Cache vcpkg packages (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: C:\vcpkg\installed\x64-windows
+          key: vcpkg-x64-windows-${{ hashFiles('vcpkg.json') }}
+
+      - name: Install dependencies via vcpkg (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # Temporarily rename vcpkg.json to allow classic mode
+          # (vcpkg.json includes ffmpeg which takes ~30 min to compile and is not needed in CI).
+          if (Test-Path vcpkg.json) {
+            Rename-Item vcpkg.json vcpkg.json.bak
+          }
+          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg" install --classic `
+            opencv4:x64-windows `
+            zeromq:x64-windows `
+            cppzmq:x64-windows `
+            freetype:x64-windows `
+            glfw3:x64-windows `
+            glew:x64-windows `
+            nlohmann-json:x64-windows
+          # Restore vcpkg.json
+          if (Test-Path vcpkg.json.bak) {
+            Rename-Item vcpkg.json.bak vcpkg.json
+          }
+
+      # ------------------------------------------------------------------ #
+      # CMake configure                                                      #
+      # ------------------------------------------------------------------ #
+      - name: Configure CMake (Ubuntu / macOS)
+        if: runner.os != 'Windows'
+        run: |
+          # On macOS, add the Homebrew prefix to CMAKE_PREFIX_PATH so that
+          # all Homebrew-installed packages (including FFmpeg) are discoverable.
+          CMAKE_EXTRA_ARGS=""
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            CMAKE_EXTRA_ARGS="-DCMAKE_PREFIX_PATH=$(brew --prefix)"
+          fi
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DFETCHCONTENT_FULLY_DISCONNECTED=OFF \
+            $CMAKE_EXTRA_ARGS
+
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # Explicitly pass OpenCV_DIR so find_package(OpenCV) locates the
+          # vcpkg opencv4 config (stored in share/opencv4/ rather than share/OpenCV/).
+          cmake -S . -B build `
+            -DCMAKE_BUILD_TYPE=Release `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            "-DOpenCV_DIR=$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\share\opencv4" `
+            -DVCPKG_MANIFEST_INSTALL=OFF `
+            -DFETCHCONTENT_FULLY_DISCONNECTED=OFF
+
+      # ------------------------------------------------------------------ #
+      # CMake build                                                          #
+      # ------------------------------------------------------------------ #
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+  python-tests:
+    name: Python unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: pip install pytest numpy
+
+      - name: Run tests
+        run: |
+          cd python
+          python -m pytest tests/ -v \
+            --ignore=tests/test_modules.py \
+            --ignore=tests/test_packaging.py \
+            -k "not face_recognition"
+
