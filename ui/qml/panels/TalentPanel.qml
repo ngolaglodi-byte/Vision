@@ -48,20 +48,31 @@ Rectangle {
         nameFilters: ["Image files (*.jpg *.jpeg *.png *.bmp *.gif)", "All files (*)"]
         selectMultiple: false
         onAccepted: {
+            // Store the original file URL for Image.source
+            var fileUrl = photoFileDialog.fileUrl.toString()
+            root.internalPhotoUrl = fileUrl
+
             // Convert file URL to local path for display and storage
-            var filePath = photoFileDialog.fileUrl.toString()
-            // Remove file:// prefix for local path
+            // Standard file URLs: file:///path (Unix) or file:///C:/path (Windows)
+            var filePath = fileUrl
             if (filePath.startsWith("file:///")) {
-                // Windows: file:///C:/... -> C:/...
-                filePath = filePath.substring(8)
-            } else if (filePath.startsWith("file://")) {
-                // Unix: file:///home/... -> /home/...
-                filePath = filePath.substring(7)
+                var afterPrefix = filePath.substring(8)
+                // Check if it's a Windows path (e.g., C:/...)
+                if (afterPrefix.length >= 2 && afterPrefix.charAt(1) === ':') {
+                    // Windows: file:///C:/... -> C:/...
+                    filePath = afterPrefix
+                } else {
+                    // Unix: file:///home/... -> /home/...
+                    filePath = "/" + afterPrefix
+                }
             }
             root.talentPhoto = filePath
-            photoPreview.source = photoFileDialog.fileUrl
+            photoPreview.source = root.internalPhotoUrl
         }
     }
+
+    // Internal property to store the valid file URL for Image.source
+    property string internalPhotoUrl: ""
 
     // ── Scrollable content ─────────────────────────────────────────
     Flickable {
@@ -260,13 +271,10 @@ Rectangle {
                                 id: photoPreview
                                 anchors.fill: parent
                                 anchors.margins: 2
-                                source: root.talentPhoto ? (root.talentPhoto.startsWith("file://") ? root.talentPhoto : "file://" + root.talentPhoto) : ""
+                                source: root.internalPhotoUrl ? root.internalPhotoUrl : (root.talentPhoto ? Qt.resolvedUrl("file:///" + root.talentPhoto) : "")
                                 fillMode: Image.PreserveAspectCrop
                                 visible: status === Image.Ready
                                 asynchronous: true
-
-                                // Rounded corners effect using clip
-                                layer.enabled: true
                             }
 
                             // Placeholder when no photo
@@ -286,7 +294,16 @@ Rectangle {
                             spacing: 4
 
                             Text {
-                                text: root.talentPhoto ? root.talentPhoto.split("/").pop() : "No photo selected"
+                                // Extract filename - handle both Unix and Windows paths
+                                property string filename: {
+                                    var path = root.talentPhoto
+                                    if (!path) return "No photo selected"
+                                    // Replace backslashes with forward slashes for consistency
+                                    path = path.replace(/\\/g, "/")
+                                    var parts = path.split("/")
+                                    return parts[parts.length - 1]
+                                }
+                                text: filename
                                 color: root.talentPhoto ? "#E6EDF3" : "#484F58"
                                 font.pixelSize: 11
                                 elide: Text.ElideMiddle
@@ -473,6 +490,7 @@ Rectangle {
         root.talentRole = ""
         root.talentOrg = ""
         root.talentPhoto = ""
+        root.internalPhotoUrl = ""
         photoPreview.source = ""
     }
 
