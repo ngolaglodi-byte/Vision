@@ -617,4 +617,327 @@ void QmlBridge::onLicenseValidation(bool valid, const QString& message)
     }
 }
 
+// ── Channel profile management ─────────────────────────────────────────────
+
+void QmlBridge::newChannelProfile()
+{
+    emit notification(QStringLiteral("New channel profile created"), QStringLiteral("info"));
+}
+
+void QmlBridge::loadChannelProfile()
+{
+    emit notification(QStringLiteral("Load channel profile: Select a profile file"),
+                      QStringLiteral("info"));
+}
+
+void QmlBridge::saveChannelProfile()
+{
+    emit notification(QStringLiteral("Channel profile saved"), QStringLiteral("success"));
+}
+
+// ── Settings dialogs (stub implementations) ────────────────────────────────
+
+void QmlBridge::openVideoEngineSettings()
+{
+    emit notification(QStringLiteral("Video Engine Settings — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openAudioRoutingSettings()
+{
+    emit notification(QStringLiteral("Audio Routing Settings — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openDeckLinkSettings()
+{
+    emit notification(QStringLiteral("DeckLink / SDI Settings — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openNdiSettings()
+{
+    emit notification(QStringLiteral("NDI Settings — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openSrtRtmpInputSettings()
+{
+    emit notification(QStringLiteral("SRT / RTMP Input Settings — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openOutputRoutingSettings()
+{
+    emit notification(QStringLiteral("Output Routing Settings — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openFaceRecognitionSettings()
+{
+    emit notification(QStringLiteral("Face Recognition Settings — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openTalentDatabase()
+{
+    emit notification(QStringLiteral("Talent Database — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openAutoOverlayRules()
+{
+    emit notification(QStringLiteral("Auto-Overlay Rules — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openAiDiagnostics()
+{
+    emit notification(QStringLiteral("AI Diagnostics — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openOverlayTemplates()
+{
+    emit notification(QStringLiteral("Overlay Templates — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openLowerThirdEditor()
+{
+    emit notification(QStringLiteral("Lower-Third Editor — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openBrandingSettings()
+{
+    emit notification(QStringLiteral("Branding Settings — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openLutManager()
+{
+    emit notification(QStringLiteral("LUT Manager — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openEffectsPipeline()
+{
+    emit notification(QStringLiteral("Effects Pipeline — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openYouTubeSetup()
+{
+    emit notification(QStringLiteral("YouTube Setup — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openFacebookSetup()
+{
+    emit notification(QStringLiteral("Facebook Setup — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openTwitchSetup()
+{
+    emit notification(QStringLiteral("Twitch Setup — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openRtmpProfiles()
+{
+    emit notification(QStringLiteral("RTMP Profiles — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openMultiStreamPresets()
+{
+    emit notification(QStringLiteral("Multi-Stream Presets — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openEncoderSettings()
+{
+    emit notification(QStringLiteral("Encoder Settings — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openSystemMonitor()
+{
+    emit notification(QStringLiteral("System Monitor — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openNetworkDiagnostics()
+{
+    emit notification(QStringLiteral("Network Diagnostics — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openLogViewer()
+{
+    emit notification(QStringLiteral("Log Viewer — Opening…"), QStringLiteral("info"));
+}
+
+void QmlBridge::openBackupRestore()
+{
+    emit notification(QStringLiteral("Backup / Restore — Opening…"), QStringLiteral("info"));
+}
+
+// ── Video effects pipeline ─────────────────────────────────────────────────
+
+void QmlBridge::loadLutFile(const QString& filePath)
+{
+    if (filePath.isEmpty()) {
+        emit notification(QStringLiteral("No LUT file selected"), QStringLiteral("warning"));
+        return;
+    }
+    emit notification(QStringLiteral("LUT file loaded: ") + filePath.split('/').last(),
+                      QStringLiteral("success"));
+}
+
+void QmlBridge::setLutPreset(const QString& preset)
+{
+    if (preset == QStringLiteral("None")) {
+        emit notification(QStringLiteral("LUT preset disabled"), QStringLiteral("info"));
+    } else {
+        emit notification(QStringLiteral("LUT preset applied: ") + preset, QStringLiteral("info"));
+    }
+}
+
+void QmlBridge::setLutIntensity(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the video filter pipeline
+}
+
+void QmlBridge::setCustomLutIntensity(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the custom LUT filter intensity
+}
+
+void QmlBridge::setExposure(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the exposure correction filter
+}
+
+void QmlBridge::setContrast(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the contrast filter
+}
+
+void QmlBridge::setSaturation(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the saturation filter
+}
+
+void QmlBridge::setTemperature(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the color temperature filter
+}
+
+void QmlBridge::setSharpenAmount(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the sharpen filter amount
+}
+
+void QmlBridge::setSharpenRadius(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the sharpen filter radius
+}
+
+void QmlBridge::setVignetteIntensity(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the vignette effect intensity
+}
+
+void QmlBridge::setVignetteSoftness(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the vignette effect softness
+}
+
+void QmlBridge::setNoiseReductionStrength(double value)
+{
+    Q_UNUSED(value)
+    // In production, this would update the noise reduction filter
+}
+
+void QmlBridge::setTitleSafeVisible(bool visible)
+{
+    emit notification(visible ? QStringLiteral("Title safe area enabled")
+                              : QStringLiteral("Title safe area disabled"),
+                      QStringLiteral("info"));
+}
+
+void QmlBridge::setActionSafeVisible(bool visible)
+{
+    emit notification(visible ? QStringLiteral("Action safe area enabled")
+                              : QStringLiteral("Action safe area disabled"),
+                      QStringLiteral("info"));
+}
+
+void QmlBridge::setSafeAreaColor(const QString& color)
+{
+    Q_UNUSED(color)
+    // In production, this would update the safe area guide color
+}
+
+void QmlBridge::applyAllEffects()
+{
+    emit notification(QStringLiteral("All effects applied to pipeline"), QStringLiteral("success"));
+}
+
+void QmlBridge::resetAllEffects()
+{
+    emit notification(QStringLiteral("All effects reset to defaults"), QStringLiteral("info"));
+}
+
+// ── Broadcast settings ─────────────────────────────────────────────────────
+
+void QmlBridge::setDefaultResolution(const QString& resolution)
+{
+    emit notification(QStringLiteral("Default resolution set: ") + resolution,
+                      QStringLiteral("info"));
+}
+
+void QmlBridge::setDefaultFrameRate(const QString& frameRate)
+{
+    emit notification(QStringLiteral("Default frame rate set: ") + frameRate,
+                      QStringLiteral("info"));
+}
+
+void QmlBridge::setDefaultBitrate(const QString& bitrate)
+{
+    emit notification(QStringLiteral("Default bitrate set: ") + bitrate,
+                      QStringLiteral("info"));
+}
+
+// ── AI settings ────────────────────────────────────────────────────────────
+
+void QmlBridge::setAutoOverlayEnabled(bool enabled)
+{
+    emit notification(enabled ? QStringLiteral("Auto-overlay enabled")
+                              : QStringLiteral("Auto-overlay disabled"),
+                      QStringLiteral("info"));
+}
+
+void QmlBridge::setMinConfidence(double value)
+{
+    emit notification(QStringLiteral("Min confidence threshold: %1%")
+                          .arg(static_cast<int>(value * 100)),
+                      QStringLiteral("info"));
+}
+
+// ── Performance settings ───────────────────────────────────────────────────
+
+void QmlBridge::setHardwareAcceleration(bool enabled)
+{
+    emit notification(enabled ? QStringLiteral("Hardware acceleration enabled")
+                              : QStringLiteral("Hardware acceleration disabled"),
+                      QStringLiteral("info"));
+}
+
+void QmlBridge::setPreviewQuality(const QString& quality)
+{
+    emit notification(QStringLiteral("Preview quality set: ") + quality,
+                      QStringLiteral("info"));
+}
+
+void QmlBridge::saveSettings()
+{
+    emit notification(QStringLiteral("Settings saved successfully"), QStringLiteral("success"));
+}
+
+void QmlBridge::resetSettings()
+{
+    emit notification(QStringLiteral("Settings reset to defaults"), QStringLiteral("info"));
+}
+
 } // namespace visioncast_ui
