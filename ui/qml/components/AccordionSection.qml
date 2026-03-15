@@ -91,11 +91,9 @@ Column {
                 Behavior on color { ColorAnimation { duration: root.animationDuration } }
             }
 
-            // Spacer
-            Item { Layout.fillWidth: true; width: 1 }
         }
 
-        // Chevron indicator
+        // Chevron indicator (positioned absolutely on the right)
         Text {
             id: chevron
             text: root.expanded ? "▼" : "▶"
@@ -104,8 +102,6 @@ Column {
             anchors.right: parent.right
             anchors.rightMargin: 12
             anchors.verticalCenter: parent.verticalCenter
-
-            rotation: root.expanded ? 0 : 0
 
             Behavior on color { ColorAnimation { duration: root.animationDuration } }
         }
