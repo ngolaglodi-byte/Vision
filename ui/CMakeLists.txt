@@ -10,9 +10,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # ============================================================
-# 🔥 Charger Qt6 et ses modules QML
+# 🔥 Charger Qt6 et ses modules QML (optionnel pour CI)
 # ============================================================
-find_package(Qt6 REQUIRED COMPONENTS
+find_package(Qt6 QUIET COMPONENTS
     Core
     Gui
     Widgets
@@ -21,13 +21,14 @@ find_package(Qt6 REQUIRED COMPONENTS
     QuickControls2
 )
 
-message(STATUS "QtQuick: YES (via Qt6::Quick)")
-message(STATUS "QtQuick.Controls: YES (via Qt6::QuickControls2)")
-message(STATUS "QtQuick.Layouts: YES (in QtQuick/qml)")
-
 set(_have_quick FALSE)
-if(TARGET Qt6::Quick AND TARGET Qt6::QuickControls2)
+if(Qt6_FOUND AND TARGET Qt6::Quick AND TARGET Qt6::QuickControls2)
     set(_have_quick TRUE)
+    message(STATUS "QtQuick: YES (via Qt6::Quick)")
+    message(STATUS "QtQuick.Controls: YES (via Qt6::QuickControls2)")
+    message(STATUS "QtQuick.Layouts: YES (in QtQuick/qml)")
+else()
+    message(STATUS "Qt6 Quick/QuickControls2 not found — skipping visioncast_ui_qml target")
 endif()
 
 if(_have_quick)

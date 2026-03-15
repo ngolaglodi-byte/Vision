@@ -2,16 +2,44 @@
 // développée par Glody Dimputu Ngola.
 //
 // EffectsPanel.qml — Professional video effects pipeline panel.
-//                     LUT, color grading, vignette, sharpen, and more.
+//                     LUT loader (.cube), color grading, vignette, sharpen,
+//                     noise reduction, and safe areas.
 
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Dialogs 1.3
 import "../components"
 
 Rectangle {
     id: root
     color: "#161B22"
+
+    // ── FileDialog for LUT .cube file import ───────────────────────
+    FileDialog {
+        id: lutFileDialog
+        title: "Select LUT File (.cube)"
+        nameFilters: ["LUT files (*.cube *.3dl)", "All files (*)"]
+        selectMultiple: false
+        onAccepted: {
+            var fileUrl = lutFileDialog.fileUrl.toString()
+            var filePath = fileUrl
+            if (filePath.startsWith("file:///")) {
+                var afterPrefix = filePath.substring(8)
+                if (afterPrefix.length >= 2 && afterPrefix.charAt(1) === ':') {
+                    filePath = afterPrefix
+                } else {
+                    filePath = "/" + afterPrefix
+                }
+            }
+            root._lutFilePath = filePath
+            bridge.loadLutFile(filePath)
+        }
+    }
+
+    // ── Internal state ─────────────────────────────────────────────
+    property string _lutFilePath: ""
+    property string _safeAreaColor: "#FF0000"
 
     // ── Header ─────────────────────────────────────────────────────
     Rectangle {
@@ -83,9 +111,71 @@ Rectangle {
             width: parent.width
             spacing: 8
 
-            // ── LUT / Color Grading ────────────────────────────────
+            // ── LUT Loader (.cube) ─────────────────────────────────
             EffectCard {
-                title: "LUT / Color Grading"
+                title: "LUT Loader (.cube)"
+                icon: "📁"
+                enabled: false
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 8
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            text: root._lutFilePath ? root._lutFilePath.split("/").pop() : "No LUT file loaded"
+                            color: root._lutFilePath ? "#E6EDF3" : "#484F58"
+                            font.pixelSize: 11
+                            elide: Text.ElideMiddle
+                            Layout.fillWidth: true
+                        }
+
+                        VCButton {
+                            text: "Browse"
+                            variant: "primary"
+                            height: 26
+                            onClicked: lutFileDialog.open()
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            text: "LUT Intensity:"
+                            color: "#8B949E"
+                            font.pixelSize: 11
+                            Layout.preferredWidth: 80
+                        }
+
+                        Slider {
+                            id: customLutIntensity
+                            Layout.fillWidth: true
+                            from: 0.0
+                            to: 1.0
+                            value: 1.0
+                            onValueChanged: bridge.setCustomLutIntensity(value)
+                        }
+
+                        Text {
+                            text: Math.round(customLutIntensity.value * 100) + "%"
+                            color: "#58A6FF"
+                            font.pixelSize: 10
+                            font.family: "JetBrains Mono, Cascadia Code, monospace"
+                            Layout.preferredWidth: 35
+                        }
+                    }
+                }
+            }
+
+            // ── LUT / Preset ───────────────────────────────────────
+            EffectCard {
+                title: "LUT Presets"
                 icon: "🎨"
                 enabled: true
 
@@ -139,6 +229,139 @@ Rectangle {
                             font.pixelSize: 10
                             font.family: "JetBrains Mono, Cascadia Code, monospace"
                             Layout.preferredWidth: 35
+                        }
+                    }
+                }
+            }
+
+            // ── Color Grading ──────────────────────────────────────
+            EffectCard {
+                title: "Color Grading"
+                icon: "🌈"
+                enabled: false
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 8
+
+                    // Exposure
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            text: "Exposure:"
+                            color: "#8B949E"
+                            font.pixelSize: 11
+                            Layout.preferredWidth: 80
+                        }
+
+                        Slider {
+                            id: exposureSlider
+                            Layout.fillWidth: true
+                            from: -2.0
+                            to: 2.0
+                            value: 0.0
+                            onValueChanged: bridge.setExposure(value)
+                        }
+
+                        Text {
+                            text: exposureSlider.value.toFixed(1) + " EV"
+                            color: "#58A6FF"
+                            font.pixelSize: 10
+                            font.family: "JetBrains Mono, Cascadia Code, monospace"
+                            Layout.preferredWidth: 50
+                        }
+                    }
+
+                    // Contrast
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            text: "Contrast:"
+                            color: "#8B949E"
+                            font.pixelSize: 11
+                            Layout.preferredWidth: 80
+                        }
+
+                        Slider {
+                            id: contrastSlider
+                            Layout.fillWidth: true
+                            from: -100
+                            to: 100
+                            value: 0
+                            onValueChanged: bridge.setContrast(value)
+                        }
+
+                        Text {
+                            text: Math.round(contrastSlider.value)
+                            color: "#58A6FF"
+                            font.pixelSize: 10
+                            font.family: "JetBrains Mono, Cascadia Code, monospace"
+                            Layout.preferredWidth: 50
+                        }
+                    }
+
+                    // Saturation
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            text: "Saturation:"
+                            color: "#8B949E"
+                            font.pixelSize: 11
+                            Layout.preferredWidth: 80
+                        }
+
+                        Slider {
+                            id: saturationSlider
+                            Layout.fillWidth: true
+                            from: -100
+                            to: 100
+                            value: 0
+                            onValueChanged: bridge.setSaturation(value)
+                        }
+
+                        Text {
+                            text: Math.round(saturationSlider.value)
+                            color: "#58A6FF"
+                            font.pixelSize: 10
+                            font.family: "JetBrains Mono, Cascadia Code, monospace"
+                            Layout.preferredWidth: 50
+                        }
+                    }
+
+                    // Temperature
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            text: "Temperature:"
+                            color: "#8B949E"
+                            font.pixelSize: 11
+                            Layout.preferredWidth: 80
+                        }
+
+                        Slider {
+                            id: temperatureSlider
+                            Layout.fillWidth: true
+                            from: -100
+                            to: 100
+                            value: 0
+                            onValueChanged: bridge.setTemperature(value)
+                        }
+
+                        Text {
+                            text: Math.round(temperatureSlider.value)
+                            color: temperatureSlider.value < 0 ? "#58A6FF" : (temperatureSlider.value > 0 ? "#FFD33D" : "#8B949E")
+                            font.pixelSize: 10
+                            font.family: "JetBrains Mono, Cascadia Code, monospace"
+                            Layout.preferredWidth: 50
                         }
                     }
                 }
@@ -328,6 +551,86 @@ Rectangle {
                 }
             }
 
+            // ── Safe Areas ─────────────────────────────────────────
+            EffectCard {
+                title: "Safe Areas"
+                icon: "📐"
+                enabled: false
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 8
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 12
+
+                        Text {
+                            text: "Title Safe"
+                            color: "#8B949E"
+                            font.pixelSize: 11
+                            Layout.fillWidth: true
+                        }
+
+                        VCToggleSwitch {
+                            id: titleSafeToggle
+                            checked: false
+                            onCheckedChanged: bridge.setTitleSafeVisible(checked)
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 12
+
+                        Text {
+                            text: "Action Safe"
+                            color: "#8B949E"
+                            font.pixelSize: 11
+                            Layout.fillWidth: true
+                        }
+
+                        VCToggleSwitch {
+                            id: actionSafeToggle
+                            checked: false
+                            onCheckedChanged: bridge.setActionSafeVisible(checked)
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            text: "Safe Color:"
+                            color: "#8B949E"
+                            font.pixelSize: 11
+                            Layout.preferredWidth: 80
+                        }
+
+                        Repeater {
+                            model: ["#FF0000", "#00FF00", "#FFFFFF", "#FFFF00"]
+                            delegate: Rectangle {
+                                width: 20; height: 20; radius: 10
+                                color: modelData
+                                border.color: root._safeAreaColor === modelData ? "#E6EDF3" : "transparent"
+                                border.width: 2
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        root._safeAreaColor = modelData
+                                        bridge.setSafeAreaColor(modelData)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // ── Apply / Reset Buttons ──────────────────────────────
             RowLayout {
                 Layout.fillWidth: true
@@ -345,13 +648,28 @@ Rectangle {
                     variant: "default"
                     Layout.preferredWidth: 80
                     onClicked: {
+                        // LUT controls
                         lutCombo.currentIndex = 0
                         lutIntensity.value = 0.8
+                        customLutIntensity.value = 1.0
+                        root._lutFilePath = ""
+                        // Color grading
+                        exposureSlider.value = 0.0
+                        contrastSlider.value = 0
+                        saturationSlider.value = 0
+                        temperatureSlider.value = 0
+                        // Sharpen
                         sharpenAmount.value = 0.5
                         sharpenRadius.value = 1.0
+                        // Vignette
                         vignetteIntensity.value = 0.3
                         vignetteSoftness.value = 0.5
+                        // Noise reduction
                         noiseStrength.value = 0.3
+                        // Safe areas
+                        titleSafeToggle.checked = false
+                        actionSafeToggle.checked = false
+                        root._safeAreaColor = "#FF0000"
                         bridge.resetAllEffects()
                     }
                 }
