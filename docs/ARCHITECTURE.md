@@ -75,11 +75,12 @@ visioncast-ai/
 │   │   ├── __init__.py
 │   │   ├── face_detector.py       # Face detection engine
 │   │   ├── face_matcher.py        # Face matching against talent DB
-│   │   └── talent_db.py           # Talent database loader
+│   │   ├── talent_db.py           # Talent database loader
+│   │   └── scene_detector.py      # Multi-plan scene detection (0→WIDE, 1→TALENT, 2+→GROUP)
 │   └── ipc/                       # Inter-Process Communication
 │       ├── __init__.py
 │       ├── metadata_sender.py     # ZeroMQ metadata publisher
-│       └── protocol.py            # Message schema definitions
+│       └── protocol.py            # Message schema definitions (+ SceneChangeMessage)
 │
 ├── engine/                        # C++ Video Engine
 │   ├── CMakeLists.txt             # Top-level CMake build
@@ -1187,6 +1188,41 @@ Thread 5: UI Thread (Qt event loop)
   "fps": 12.5
 }
 ```
+
+#### Scene Change (Python → C++ Engine)
+
+VisionCast-AI implements automatic multi-plan scene detection based on face count:
+
+| Face Count | Scene Mode | Display |
+|---|---|---|
+| 0 | `wide_shot` | Title, logo, theme overlay |
+| 1 | `talent` | Lower-third of recognized talent |
+| 2+ | `group` | Group/panel overlay |
+
+```json
+{
+  "type": "scene_change",
+  "mode": "talent",
+  "face_count": 1,
+  "talents": [
+    {
+      "id": "glody",
+      "name": "Glody",
+      "role": "Présentateur"
+    }
+  ],
+  "title": "VisionCast News",
+  "subtitle": "Breaking Coverage",
+  "logo_path": "/logos/news.png",
+  "group_title": "",
+  "group_subtitle": "",
+  "confidence": 0.95,
+  "stable": true,
+  "timestamp_ms": 1709654400000
+}
+```
+
+The scene detector includes temporal smoothing (configurable `stability_frames`) and hysteresis to prevent rapid mode switching during broadcast.
 
 ### 8.3 Topic-Based Routing
 

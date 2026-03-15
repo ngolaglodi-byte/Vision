@@ -8,6 +8,7 @@ from .detection import Detection
 from .encoding import Encoding
 from .recognition import Recognition
 from .talents_loader import TalentsLoader
+from .scene_detector import SceneDetector, SceneMode, SceneConfig, SceneResult
 
 __all__ = [
     "FaceDetector",
@@ -17,4 +18,8 @@ __all__ = [
     "Encoding",
     "Recognition",
     "TalentsLoader",
+    "SceneDetector",
+    "SceneMode",
+    "SceneConfig",
+    "SceneResult",
 ]
