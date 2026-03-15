@@ -14,6 +14,9 @@
         <file alias="panels/RecognitionPanel.qml">panels/RecognitionPanel.qml</file>
         <file alias="panels/MultiStreamPanel.qml">panels/MultiStreamPanel.qml</file>
         <file alias="panels/DesignPanel.qml">panels/DesignPanel.qml</file>
+        <file alias="panels/EffectsPanel.qml">panels/EffectsPanel.qml</file>
+        <file alias="panels/SettingsPanel.qml">panels/SettingsPanel.qml</file>
+        <file alias="panels/AboutPanel.qml">panels/AboutPanel.qml</file>
 
         <!-- Components -->
         <file alias="components/VCButton.qml">components/VCButton.qml</file>
