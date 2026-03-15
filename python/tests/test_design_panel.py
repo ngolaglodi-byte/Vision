@@ -358,11 +358,16 @@ class TestDesignPanelSource:
 # =====================================================================
 
 class TestDesignPanelCMake:
-    """Verify ui/CMakeLists.txt includes the new source file."""
+    """Verify ui/CMakeLists.txt includes the panel (C++ source or QML)."""
 
     def test_design_panel_in_cmake(self):
         text = _read(UI_CMAKE)
-        assert "design_panel.cpp" in text
+        # Accept either the C++ widget source or the QML-based DesignPanel.
+        has_cpp = "design_panel.cpp" in text
+        has_qml = "DesignPanel.qml" in text
+        assert has_cpp or has_qml, (
+            "Expected 'design_panel.cpp' or 'DesignPanel.qml' in ui/CMakeLists.txt"
+        )
 
 
 # =====================================================================

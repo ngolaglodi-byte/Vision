@@ -313,11 +313,16 @@ class TestMonitoringPanelSource:
 # =====================================================================
 
 class TestMonitoringPanelCMake:
-    """Verify ui/CMakeLists.txt includes the monitoring_panel source file."""
+    """Verify ui/CMakeLists.txt includes the panel (C++ source or QML)."""
 
     def test_monitoring_panel_in_cmake(self):
         text = _read(UI_CMAKE)
-        assert "monitoring_panel.cpp" in text
+        # Accept either the C++ widget source or the QML-based MonitoringPanel.
+        has_cpp = "monitoring_panel.cpp" in text
+        has_qml = "MonitoringPanel.qml" in text
+        assert has_cpp or has_qml, (
+            "Expected 'monitoring_panel.cpp' or 'MonitoringPanel.qml' in ui/CMakeLists.txt"
+        )
 
 
 # =====================================================================
