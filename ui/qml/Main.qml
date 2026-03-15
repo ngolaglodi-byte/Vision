@@ -131,11 +131,166 @@ menuBar: Rectangle {
             }
             spacing: 0
 
-            // Left column
-            SourcePanel {
-                Layout.preferredWidth:  300
-                Layout.minimumWidth:    220
-                Layout.fillHeight:      true
+            // Left column — Premium Accordion Menu (160px)
+            Rectangle {
+                id: leftAccordionMenu
+                Layout.preferredWidth: 160
+                Layout.minimumWidth: 160
+                Layout.maximumWidth: 160
+                Layout.fillHeight: true
+                color: "#161B22"
+
+                // Prestige gradient header
+                Rectangle {
+                    id: accordionHeader
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 44
+                    z: 2
+
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.0; color: "#1A2332" }
+                        GradientStop { position: 1.0; color: "#1F6FEB22" }
+                    }
+
+                    // Bottom border
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        height: 1
+                        color: "#30363D"
+                    }
+
+                    // Logo / Brand
+                    Row {
+                        anchors.centerIn: parent
+                        spacing: 8
+
+                        Rectangle {
+                            width: 24; height: 24; radius: 6
+                            gradient: Gradient {
+                                orientation: Gradient.Horizontal
+                                GradientStop { position: 0.0; color: "#1F6FEB" }
+                                GradientStop { position: 1.0; color: "#A855F7" }
+                            }
+                            Text {
+                                anchors.centerIn: parent
+                                text: "VC"
+                                color: "#FFFFFF"
+                                font.pixelSize: 9
+                                font.weight: Font.Bold
+                            }
+                        }
+
+                        Text {
+                            text: "PANELS"
+                            color: "#8B949E"
+                            font.pixelSize: 10
+                            font.weight: Font.DemiBold
+                            font.letterSpacing: 1.2
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                // Scrollable accordion sections
+                Flickable {
+                    id: accordionFlickable
+                    anchors.top: accordionHeader.bottom
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    contentHeight: accordionColumn.height
+                    clip: true
+                    boundsBehavior: Flickable.StopAtBounds
+
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
+                        width: 4
+                    }
+
+                    Column {
+                        id: accordionColumn
+                        width: parent.width
+                        spacing: 0
+
+                        // 🎥 Sources
+                        AccordionSection {
+                            sectionIcon: "🎥"
+                            sectionTitle: "Sources"
+                            expandedHeight: 350
+                            panelComponent: Component { SourcePanel { } }
+                        }
+
+                        // 🎨 Design
+                        AccordionSection {
+                            sectionIcon: "🎨"
+                            sectionTitle: "Design"
+                            expandedHeight: 320
+                            panelComponent: Component { DesignPanel { } }
+                        }
+
+                        // 👤 Talent
+                        AccordionSection {
+                            sectionIcon: "👤"
+                            sectionTitle: "Talent"
+                            expandedHeight: 400
+                            panelComponent: Component { TalentPanel { } }
+                        }
+
+                        // 🖼️ Overlay
+                        AccordionSection {
+                            sectionIcon: "🖼️"
+                            sectionTitle: "Overlay"
+                            expandedHeight: 400
+                            panelComponent: Component { OverlayPanel { } }
+                        }
+
+                        // 🔍 Recognition
+                        AccordionSection {
+                            sectionIcon: "🔍"
+                            sectionTitle: "Recognition"
+                            expandedHeight: 280
+                            panelComponent: Component { RecognitionPanel { } }
+                        }
+
+                        // 📊 Monitoring
+                        AccordionSection {
+                            sectionIcon: "📊"
+                            sectionTitle: "Monitoring"
+                            expandedHeight: 220
+                            panelComponent: Component { MonitoringPanel { } }
+                        }
+
+                        // 📡 Multi-Streaming
+                        AccordionSection {
+                            sectionIcon: "📡"
+                            sectionTitle: "Multi-Stream"
+                            expandedHeight: 380
+                            panelComponent: Component { MultiStreamPanel { } }
+                        }
+
+                        // 🔌 Output
+                        AccordionSection {
+                            sectionIcon: "🔌"
+                            sectionTitle: "Output"
+                            expandedHeight: 250
+                            panelComponent: Component { OutputPanel { } }
+                        }
+                    }
+                }
+
+                // Right border separator
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    width: 1
+                    color: "#30363D"
+                }
             }
             Rectangle { Layout.preferredWidth: 1; Layout.fillHeight: true; color: "#30363D" }
 

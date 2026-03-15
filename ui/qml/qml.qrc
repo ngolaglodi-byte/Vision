@@ -13,6 +13,7 @@
         <file alias="panels/OutputPanel.qml">panels/OutputPanel.qml</file>
         <file alias="panels/RecognitionPanel.qml">panels/RecognitionPanel.qml</file>
         <file alias="panels/MultiStreamPanel.qml">panels/MultiStreamPanel.qml</file>
+        <file alias="panels/DesignPanel.qml">panels/DesignPanel.qml</file>
 
         <!-- Components -->
         <file alias="components/VCButton.qml">components/VCButton.qml</file>
@@ -25,6 +26,7 @@
         <file alias="components/VCOverlayPreview.qml">components/VCOverlayPreview.qml</file>
         <file alias="components/VCMetricGauge.qml">components/VCMetricGauge.qml</file>
         <file alias="components/VCToggleSwitch.qml">components/VCToggleSwitch.qml</file>
+        <file alias="components/AccordionSection.qml">components/AccordionSection.qml</file>
 
         <!-- Theme -->
         <file alias="theme/VCTheme.qml">theme/VCTheme.qml</file>
