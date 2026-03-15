@@ -135,7 +135,8 @@ class TestUiInstallRules:
     cmake = _read("ui/CMakeLists.txt")
 
     def test_ui_executable_installed(self):
-        assert re.search(r'install\s*\(\s*TARGETS\s+visioncast_ui\s+RUNTIME', self.cmake)
+        # The actual QML UI target is visioncast_ui_qml
+        assert re.search(r'install\s*\(\s*TARGETS\s+visioncast_ui_qml\s+RUNTIME', self.cmake)
 
 
 # ---------------------------------------------------------------------------
