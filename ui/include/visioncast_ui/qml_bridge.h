@@ -179,6 +179,134 @@ public:
                                    const QString& color, const QString& entryAnim,
                                    const QString& exitAnim, int duration);
 
+    // ── Channel profile management ─────────────────────────────────
+
+    /// Create a new channel profile.
+    Q_INVOKABLE void newChannelProfile();
+
+    /// Load a channel profile from file.
+    Q_INVOKABLE void loadChannelProfile();
+
+    /// Save the current channel profile.
+    Q_INVOKABLE void saveChannelProfile();
+
+    // ── Settings dialogs (stub implementations) ────────────────────
+
+    Q_INVOKABLE void openVideoEngineSettings();
+    Q_INVOKABLE void openAudioRoutingSettings();
+    Q_INVOKABLE void openDeckLinkSettings();
+    Q_INVOKABLE void openNdiSettings();
+    Q_INVOKABLE void openSrtRtmpInputSettings();
+    Q_INVOKABLE void openOutputRoutingSettings();
+    Q_INVOKABLE void openFaceRecognitionSettings();
+    Q_INVOKABLE void openTalentDatabase();
+    Q_INVOKABLE void openAutoOverlayRules();
+    Q_INVOKABLE void openAiDiagnostics();
+    Q_INVOKABLE void openOverlayTemplates();
+    Q_INVOKABLE void openLowerThirdEditor();
+    Q_INVOKABLE void openBrandingSettings();
+    Q_INVOKABLE void openLutManager();
+    Q_INVOKABLE void openEffectsPipeline();
+    Q_INVOKABLE void openYouTubeSetup();
+    Q_INVOKABLE void openFacebookSetup();
+    Q_INVOKABLE void openTwitchSetup();
+    Q_INVOKABLE void openRtmpProfiles();
+    Q_INVOKABLE void openMultiStreamPresets();
+    Q_INVOKABLE void openEncoderSettings();
+    Q_INVOKABLE void openSystemMonitor();
+    Q_INVOKABLE void openNetworkDiagnostics();
+    Q_INVOKABLE void openLogViewer();
+    Q_INVOKABLE void openBackupRestore();
+
+    // ── Video effects pipeline ─────────────────────────────────────
+
+    /// Load a custom LUT file (.cube).
+    Q_INVOKABLE void loadLutFile(const QString& filePath);
+
+    /// Set the LUT preset (None, Cinema Warm, etc.).
+    Q_INVOKABLE void setLutPreset(const QString& preset);
+
+    /// Set the LUT preset intensity (0.0–1.0).
+    Q_INVOKABLE void setLutIntensity(double value);
+
+    /// Set the custom LUT intensity (0.0–1.0).
+    Q_INVOKABLE void setCustomLutIntensity(double value);
+
+    /// Set exposure value (-2.0 to +2.0 EV).
+    Q_INVOKABLE void setExposure(double value);
+
+    /// Set contrast value (-100 to +100).
+    Q_INVOKABLE void setContrast(double value);
+
+    /// Set saturation value (-100 to +100).
+    Q_INVOKABLE void setSaturation(double value);
+
+    /// Set color temperature value (-100 to +100).
+    Q_INVOKABLE void setTemperature(double value);
+
+    /// Set sharpen amount (0.0–2.0).
+    Q_INVOKABLE void setSharpenAmount(double value);
+
+    /// Set sharpen radius (0.5–3.0 px).
+    Q_INVOKABLE void setSharpenRadius(double value);
+
+    /// Set vignette intensity (0.0–1.0).
+    Q_INVOKABLE void setVignetteIntensity(double value);
+
+    /// Set vignette softness (0.0–1.0).
+    Q_INVOKABLE void setVignetteSoftness(double value);
+
+    /// Set noise reduction strength (0.0–1.0).
+    Q_INVOKABLE void setNoiseReductionStrength(double value);
+
+    /// Show/hide title safe area overlay.
+    Q_INVOKABLE void setTitleSafeVisible(bool visible);
+
+    /// Show/hide action safe area overlay.
+    Q_INVOKABLE void setActionSafeVisible(bool visible);
+
+    /// Set safe area guide color.
+    Q_INVOKABLE void setSafeAreaColor(const QString& color);
+
+    /// Apply all current effects to the video pipeline.
+    Q_INVOKABLE void applyAllEffects();
+
+    /// Reset all effects to default values.
+    Q_INVOKABLE void resetAllEffects();
+
+    // ── Broadcast settings ─────────────────────────────────────────
+
+    /// Set default output resolution.
+    Q_INVOKABLE void setDefaultResolution(const QString& resolution);
+
+    /// Set default frame rate.
+    Q_INVOKABLE void setDefaultFrameRate(const QString& frameRate);
+
+    /// Set default video bitrate.
+    Q_INVOKABLE void setDefaultBitrate(const QString& bitrate);
+
+    // ── AI settings ────────────────────────────────────────────────
+
+    /// Enable/disable automatic overlay triggering.
+    Q_INVOKABLE void setAutoOverlayEnabled(bool enabled);
+
+    /// Set minimum confidence threshold for face recognition.
+    Q_INVOKABLE void setMinConfidence(double value);
+
+    // ── Performance settings ───────────────────────────────────────
+
+    /// Enable/disable hardware acceleration.
+    Q_INVOKABLE void setHardwareAcceleration(bool enabled);
+
+    /// Set preview quality mode.
+    Q_INVOKABLE void setPreviewQuality(const QString& quality);
+
+    /// Save all application settings.
+    Q_INVOKABLE void saveSettings();
+
+    /// Reset all settings to defaults.
+    Q_INVOKABLE void resetSettings();
+
 signals:
     void engineStatusChanged();
     void aiStatusChanged();

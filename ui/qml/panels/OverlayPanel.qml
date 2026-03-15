@@ -120,13 +120,13 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: {
                         root.selectedId = modelData.id;
-                        root.formTitle     = modelData.title     || "";
-                        root.formSubtitle  = modelData.subtitle  || "";
-                        root.formStyle     = modelData.style     || "Default";
-                        root.formColor     = modelData.color     || "#FFFFFF";
-                        root.formEntryAnim = modelData.entryAnim || "none";
-                        root.formExitAnim  = modelData.exitAnim  || "none";
-                        root.formDuration  = modelData.duration  || 500;
+                        editorCard.formTitle     = modelData.title     || "";
+                        editorCard.formSubtitle  = modelData.subtitle  || "";
+                        editorCard.formStyle     = modelData.style     || "Default";
+                        editorCard.formColor     = modelData.color     || "#FFFFFF";
+                        editorCard.formEntryAnim = modelData.entryAnim || "none";
+                        editorCard.formExitAnim  = modelData.exitAnim  || "none";
+                        editorCard.formDuration  = modelData.duration  || 500;
                     }
                 }
 
@@ -151,6 +151,7 @@ Rectangle {
 
         // == Overlay editor ==
         Rectangle {
+            id: editorCard
             Layout.fillWidth: true
             Layout.fillHeight: true
             color: "#21262D"
@@ -188,40 +189,40 @@ Rectangle {
                     anchors.right: parent.right
 
                     Text { text: "Title"; color: "#8B949E"; font.pixelSize: 12; Layout.alignment: Qt.AlignRight }
-                    TextField { text: parent.formTitle; onTextChanged: parent.formTitle = text }
+                    TextField { text: editorCard.formTitle; onTextChanged: editorCard.formTitle = text }
 
                     Text { text: "Subtitle"; color: "#8B949E"; font.pixelSize: 12; Layout.alignment: Qt.AlignRight }
-                    TextField { text: parent.formSubtitle; onTextChanged: parent.formSubtitle = text }
+                    TextField { text: editorCard.formSubtitle; onTextChanged: editorCard.formSubtitle = text }
 
                     Text { text: "Style"; color: "#8B949E"; font.pixelSize: 12; Layout.alignment: Qt.AlignRight }
                     ComboBox {
                         model: ["Default", "Minimal", "Barred", "Lower Third"]
-                        currentIndex: model.indexOf(parent.formStyle)
-                        onCurrentIndexChanged: parent.formStyle = model[currentIndex]
+                        currentIndex: model.indexOf(editorCard.formStyle)
+                        onCurrentIndexChanged: editorCard.formStyle = model[currentIndex]
                     }
 
                     Text { text: "Color"; color: "#8B949E"; font.pixelSize: 12; Layout.alignment: Qt.AlignRight }
-                    TextField { text: parent.formColor; onTextChanged: parent.formColor = text }
+                    TextField { text: editorCard.formColor; onTextChanged: editorCard.formColor = text }
 
                     Text { text: "Entry Animation"; color: "#8B949E"; font.pixelSize: 12; Layout.alignment: Qt.AlignRight }
                     ComboBox {
                         model: ["none", "fade", "slide", "grow"]
-                        currentIndex: model.indexOf(parent.formEntryAnim)
-                        onCurrentIndexChanged: parent.formEntryAnim = model[currentIndex]
+                        currentIndex: model.indexOf(editorCard.formEntryAnim)
+                        onCurrentIndexChanged: editorCard.formEntryAnim = model[currentIndex]
                     }
 
                     Text { text: "Exit Animation"; color: "#8B949E"; font.pixelSize: 12; Layout.alignment: Qt.AlignRight }
                     ComboBox {
                         model: ["none", "fade", "slide", "grow"]
-                        currentIndex: model.indexOf(parent.formExitAnim)
-                        onCurrentIndexChanged: parent.formExitAnim = model[currentIndex]
+                        currentIndex: model.indexOf(editorCard.formExitAnim)
+                        onCurrentIndexChanged: editorCard.formExitAnim = model[currentIndex]
                     }
 
                     Text { text: "Duration (ms)"; color: "#8B949E"; font.pixelSize: 12; Layout.alignment: Qt.AlignRight }
                     SpinBox {
-                        value: parent.formDuration
+                        value: editorCard.formDuration
                         from: 100; to: 10000; stepSize: 100
-                        onValueChanged: parent.formDuration = value
+                        onValueChanged: editorCard.formDuration = value
                     }
                 }
 
@@ -231,11 +232,11 @@ Rectangle {
                         text: "Apply"
                         enabled: root.selectedId !== ""
                         onClicked: {
-                            // Appelle la fonction C++ dans qml_bridge pour appliquer les changements
+                            // Calls the C++ function in qml_bridge to apply the changes
                             bridge.updateOverlay(
-                                root.selectedId, parent.formTitle, parent.formSubtitle,
-                                parent.formStyle, parent.formColor, parent.formEntryAnim,
-                                parent.formExitAnim, parent.formDuration
+                                root.selectedId, editorCard.formTitle, editorCard.formSubtitle,
+                                editorCard.formStyle, editorCard.formColor, editorCard.formEntryAnim,
+                                editorCard.formExitAnim, editorCard.formDuration
                             );
                         }
                     }
@@ -243,13 +244,13 @@ Rectangle {
                         text: "Clear"
                         onClicked: {
                             root.selectedId = ""
-                            parent.formTitle = ""
-                            parent.formSubtitle = ""
-                            parent.formStyle = "Default"
-                            parent.formColor = "#FFFFFF"
-                            parent.formEntryAnim = "none"
-                            parent.formExitAnim = "none"
-                            parent.formDuration = 500
+                            editorCard.formTitle = ""
+                            editorCard.formSubtitle = ""
+                            editorCard.formStyle = "Default"
+                            editorCard.formColor = "#FFFFFF"
+                            editorCard.formEntryAnim = "none"
+                            editorCard.formExitAnim = "none"
+                            editorCard.formDuration = 500
                         }
                     }
                 }

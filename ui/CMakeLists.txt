@@ -91,12 +91,22 @@ if(_have_quick)
             qml/Main.qml
 
             # Components
-            qml/components/VCSearchField.qml
-            qml/components/VCMetricGauge.qml
             qml/components/AccordionSection.qml
+            qml/components/VCButton.qml
+            qml/components/VCCard.qml
+            qml/components/VCMetricGauge.qml
+            qml/components/VCOverlayPreview.qml
+            qml/components/VCSearchField.qml
+            qml/components/VCSectionHeader.qml
+            qml/components/VCStatusIndicator.qml
+            qml/components/VCTalentCard.qml
+            qml/components/VCToggleSwitch.qml
+            qml/components/VCVideoThumbnail.qml
 
             # Panels
+            qml/panels/AboutPanel.qml
             qml/panels/DesignPanel.qml
+            qml/panels/EffectsPanel.qml
             qml/panels/MonitoringPanel.qml
             qml/panels/MultiStreamPanel.qml
             qml/panels/OutputPanel.qml
@@ -104,10 +114,12 @@ if(_have_quick)
             qml/panels/PreviewView.qml
             qml/panels/ProgramView.qml
             qml/panels/RecognitionPanel.qml
+            qml/panels/SettingsPanel.qml
             qml/panels/SourcePanel.qml
             qml/panels/TalentPanel.qml
 
             # Theme
+            qml/theme/VCColors.qml
             qml/theme/VCTheme.qml
     )
 
