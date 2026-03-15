@@ -92,6 +92,7 @@ if(_have_quick)
             # Components
             qml/components/VCSearchField.qml
             qml/components/VCMetricGauge.qml
+            qml/components/AccordionSection.qml
 
             # Panels
             qml/panels/DesignPanel.qml
