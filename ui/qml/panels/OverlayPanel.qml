@@ -232,7 +232,7 @@ Rectangle {
                         text: "Apply"
                         enabled: root.selectedId !== ""
                         onClicked: {
-                            // Appelle la fonction C++ dans qml_bridge pour appliquer les changements
+                            // Calls the C++ function in qml_bridge to apply the changes
                             bridge.updateOverlay(
                                 root.selectedId, editorCard.formTitle, editorCard.formSubtitle,
                                 editorCard.formStyle, editorCard.formColor, editorCard.formEntryAnim,

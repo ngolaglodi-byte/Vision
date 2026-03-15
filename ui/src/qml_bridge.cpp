@@ -786,67 +786,67 @@ void QmlBridge::setLutPreset(const QString& preset)
 void QmlBridge::setLutIntensity(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the video filter pipeline
+    // Stub: Controls intensity of built-in LUT presets (Cinema Warm, Film Noir, etc.)
 }
 
 void QmlBridge::setCustomLutIntensity(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the custom LUT filter intensity
+    // Stub: Controls intensity of user-loaded custom .cube LUT files
 }
 
 void QmlBridge::setExposure(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the exposure correction filter
+    // Stub: Controls exposure correction filter
 }
 
 void QmlBridge::setContrast(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the contrast filter
+    // Stub: Controls contrast filter
 }
 
 void QmlBridge::setSaturation(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the saturation filter
+    // Stub: Controls saturation filter
 }
 
 void QmlBridge::setTemperature(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the color temperature filter
+    // Stub: Controls color temperature filter
 }
 
 void QmlBridge::setSharpenAmount(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the sharpen filter amount
+    // Stub: Controls sharpen filter amount
 }
 
 void QmlBridge::setSharpenRadius(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the sharpen filter radius
+    // Stub: Controls sharpen filter radius
 }
 
 void QmlBridge::setVignetteIntensity(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the vignette effect intensity
+    // Stub: Controls vignette effect intensity
 }
 
 void QmlBridge::setVignetteSoftness(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the vignette effect softness
+    // Stub: Controls vignette effect softness
 }
 
 void QmlBridge::setNoiseReductionStrength(double value)
 {
     Q_UNUSED(value)
-    // In production, this would update the noise reduction filter
+    // Stub: Controls noise reduction filter strength
 }
 
 void QmlBridge::setTitleSafeVisible(bool visible)
@@ -866,7 +866,7 @@ void QmlBridge::setActionSafeVisible(bool visible)
 void QmlBridge::setSafeAreaColor(const QString& color)
 {
     Q_UNUSED(color)
-    // In production, this would update the safe area guide color
+    // Stub: Controls safe area guide color
 }
 
 void QmlBridge::applyAllEffects()
