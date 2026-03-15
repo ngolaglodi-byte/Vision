@@ -202,3 +202,72 @@ class LogMessage:
             message=data.get("message", ""),
             timestamp_ms=data.get("timestamp_ms", 0),
         )
+
+
+@dataclass
+class SceneChangeMessage:
+    """Scene mode change notification for multi-plan broadcast automation.
+
+    Sent when the scene detection AI determines a mode change based on
+    face count analysis:
+    - WIDE_SHOT (0 faces): Display title, logo, theme
+    - TALENT (1 face): Display lower-third overlay
+    - GROUP (2+ faces): Display group/panel overlay
+
+    See docs/ARCHITECTURE.md Section 8 for the full protocol specification.
+    """
+    mode: str  # "wide_shot", "talent", or "group"
+    face_count: int
+    talents: list = field(default_factory=list)
+    title: str = ""
+    subtitle: str = ""
+    logo_path: str = ""
+    group_title: str = ""
+    group_subtitle: str = ""
+    confidence: float = 1.0
+    stable: bool = True
+    timestamp_ms: int = 0
+
+    VALID_MODES = ("wide_shot", "talent", "group")
+
+    def __post_init__(self):
+        if self.mode not in self.VALID_MODES:
+            raise ValueError(
+                f"Invalid mode {self.mode!r}, "
+                f"must be one of {self.VALID_MODES}"
+            )
+
+    def to_json(self) -> str:
+        """Serialize to JSON string for ZeroMQ transmission."""
+        return json.dumps({
+            "type": "scene_change",
+            "mode": self.mode,
+            "face_count": self.face_count,
+            "talents": self.talents,
+            "title": self.title,
+            "subtitle": self.subtitle,
+            "logo_path": self.logo_path,
+            "group_title": self.group_title,
+            "group_subtitle": self.group_subtitle,
+            "confidence": self.confidence,
+            "stable": self.stable,
+            "timestamp_ms": self.timestamp_ms or int(time.time() * 1000),
+        })
+
+    @classmethod
+    def from_json(cls, json_str: str) -> "SceneChangeMessage":
+        """Deserialize from JSON string."""
+        data = json.loads(json_str)
+        return cls(
+            mode=data["mode"],
+            face_count=data.get("face_count", 0),
+            talents=data.get("talents", []),
+            title=data.get("title", ""),
+            subtitle=data.get("subtitle", ""),
+            logo_path=data.get("logo_path", ""),
+            group_title=data.get("group_title", ""),
+            group_subtitle=data.get("group_subtitle", ""),
+            confidence=data.get("confidence", 1.0),
+            stable=data.get("stable", True),
+            timestamp_ms=data.get("timestamp_ms", 0),
+        )
