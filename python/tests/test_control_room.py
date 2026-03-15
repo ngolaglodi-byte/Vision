@@ -142,11 +142,17 @@ class TestControlRoomSource:
 # =====================================================================
 
 class TestControlRoomCMake:
-    """Verify ui/CMakeLists.txt includes the new source file."""
+    """Verify ui/CMakeLists.txt includes the panel (C++ source or QML)."""
 
     def test_control_room_in_cmake(self):
         text = _read(UI_CMAKE)
-        assert "control_room.cpp" in text
+        # Accept either the C++ widget source or a QML-based SourcePanel
+        # (control room functionality moved to QML SourcePanel).
+        has_cpp = "control_room.cpp" in text
+        has_qml = "SourcePanel.qml" in text
+        assert has_cpp or has_qml, (
+            "Expected 'control_room.cpp' or 'SourcePanel.qml' in ui/CMakeLists.txt"
+        )
 
 
 # =====================================================================
