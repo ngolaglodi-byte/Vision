@@ -387,7 +387,7 @@ Rectangle {
                         rowSpacing: 12
                         columnSpacing: 16
 
-                        Text { text: "Preview Quality"; color: "#8B949E"; font.pixelSize: 12 }
+                        Text { text: "Output Quality"; color: "#8B949E"; font.pixelSize: 12 }
                         ComboBox {
                             Layout.fillWidth: true
                             model: ["High", "Medium", "Low", "Auto"]

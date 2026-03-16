@@ -220,42 +220,22 @@ ApplicationWindow {
             anchors.fill: parent
             spacing: 0
 
-            // ── Center: Program/Preview Area ──────────────────────────
+            // ── Center: LIVE OUTPUT Area ──────────────────────────────
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 spacing: 0
 
-                // Program/Preview views
+                // LIVE OUTPUT view — single central screen showing the
+                // switcher feed with all VisionCast-AI treatments applied.
                 Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    ColumnLayout {
+                    // Live Output View (single central screen)
+                    LiveOutputView {
                         anchors.fill: parent
-                        anchors.margins: 8
-                        spacing: 8
-
-                        // Program View (Main output)
-                        ProgramView {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            Layout.preferredHeight: parent.height * 0.55
-                        }
-
-                        // Separator
-                        Rectangle {
-                            Layout.fillWidth: true
-                            height: 1
-                            color: "#30363D"
-                        }
-
-                        // Preview View
-                        PreviewView {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            Layout.preferredHeight: parent.height * 0.45
-                        }
+                        anchors.margins: 12
                     }
                 }
 

@@ -84,8 +84,7 @@ cmake --build build --parallel
 | QML File | Description |
 |---|---|
 | `panels/SourcePanel.qml` | Camera/source list (left column) |
-| `panels/ProgramView.qml` | Program output with LIVE red border |
-| `panels/PreviewView.qml` | Preview output with green border |
+| `panels/LiveOutputView.qml` | Live output with LIVE red border — shows switcher feed + AI treatments |
 | `panels/TalentPanel.qml` | Talent database browser |
 | `panels/OverlayPanel.qml` | Overlay template browser + toggles |
 | `panels/MonitoringPanel.qml` | CPU / GPU / Memory / FPS gauges |

@@ -5,8 +5,7 @@
 
         <!-- Panels -->
         <file alias="panels/SourcePanel.qml">panels/SourcePanel.qml</file>
-        <file alias="panels/ProgramView.qml">panels/ProgramView.qml</file>
-        <file alias="panels/PreviewView.qml">panels/PreviewView.qml</file>
+        <file alias="panels/LiveOutputView.qml">panels/LiveOutputView.qml</file>
         <file alias="panels/TalentPanel.qml">panels/TalentPanel.qml</file>
         <file alias="panels/OverlayPanel.qml">panels/OverlayPanel.qml</file>
         <file alias="panels/MonitoringPanel.qml">panels/MonitoringPanel.qml</file>
