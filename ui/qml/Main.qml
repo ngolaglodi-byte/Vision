@@ -2,6 +2,7 @@
 // développée par Glody Dimputu Ngola.
 //
 // Main.qml — Root ApplicationWindow for the QML Broadcast Control Room.
+//            Modernized layout with right-side panel system.
 
 import QtQuick 2.15
 import QtQuick.Controls 2.15
@@ -19,159 +20,174 @@ ApplicationWindow {
     title: "VisionCast-AI — Broadcast Control Room"
     color: "#0D1117"
 
+    // ── Panel Manager instance ────────────────────────────────────────
+    PanelManager {
+        id: panelManager
+    }
+
     // == Menu bar modernisée (QtQuick Controls 2 compatible) ==
     // == Professional broadcast-level menu system ==
     menuBar: Rectangle {
-        height: 40
+        height: 44
         color: "#161B22"
-        border.color: "#30363D"
-        border.width: 1
 
-        Row {
+        // Top gradient accent
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 2
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: "#1F6FEB" }
+                GradientStop { position: 0.5; color: "#A855F7" }
+                GradientStop { position: 1.0; color: "#1F6FEB" }
+            }
+        }
+
+        // Bottom border
+        Rectangle {
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 1
+            color: "#30363D"
+        }
+
+        RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 16
-            spacing: 24
+            anchors.rightMargin: 16
+            spacing: 0
+
+            // VisionCast Logo
+            Row {
+                spacing: 8
+                Layout.rightMargin: 24
+
+                Rectangle {
+                    width: 28
+                    height: 28
+                    radius: 6
+                    anchors.verticalCenter: parent.verticalCenter
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.0; color: "#1F6FEB" }
+                        GradientStop { position: 1.0; color: "#A855F7" }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "VC"
+                        color: "#FFFFFF"
+                        font.pixelSize: 10
+                        font.weight: Font.Bold
+                    }
+                }
+
+                Text {
+                    text: "VisionCast"
+                    color: "#E6EDF3"
+                    font.pixelSize: 14
+                    font.weight: Font.Bold
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
 
             // ==== CHANNEL ====
-            VCSectionHeader {
-                title: "Channel"
-                onClicked: channelMenu.open()
-            }
-            Menu {
-                id: channelMenu
-                MenuItem { text: "New Channel Profile"; onTriggered: bridge.newChannelProfile() }
-                MenuItem { text: "Load Channel Profile..."; onTriggered: bridge.loadChannelProfile() }
-                MenuItem { text: "Save Channel Profile"; onTriggered: bridge.saveChannelProfile() }
-                MenuSeparator {}
-                MenuItem { text: "Export Settings..."; onTriggered: bridge.exportProject() }
-                MenuSeparator {}
-                MenuItem { text: "Exit"; onTriggered: Qt.quit() }
+            MenuButton {
+                text: "Channel"
+                onClicked: panelManager.navigateTo("channel")
+                active: panelManager.activePanel === "channel"
             }
 
-            // ==== BROADCAST SETTINGS ====
-            VCSectionHeader {
-                title: "Broadcast"
-                onClicked: broadcastSettingsMenu.open()
-            }
-            Menu {
-                id: broadcastSettingsMenu
-                MenuItem { text: "Video Engine"; onTriggered: bridge.openVideoEngineSettings() }
-                MenuItem { text: "Audio Routing"; onTriggered: bridge.openAudioRoutingSettings() }
-                MenuSeparator {}
-                MenuItem { text: "DeckLink / SDI"; onTriggered: bridge.openDeckLinkSettings() }
-                MenuItem { text: "NDI"; onTriggered: bridge.openNdiSettings() }
-                MenuItem { text: "SRT / RTMP Inputs"; onTriggered: bridge.openSrtRtmpInputSettings() }
-                MenuSeparator {}
-                MenuItem { text: "Output Routing"; onTriggered: bridge.openOutputRoutingSettings() }
-                MenuSeparator {}
-                MenuItem { text: "Start Engine"; onTriggered: bridge.startEngine() }
-                MenuItem { text: "Stop Engine"; onTriggered: bridge.stopEngine() }
-                MenuSeparator {}
-                MenuItem { text: "Go Live"; onTriggered: bridge.goLive() }
-                MenuItem { text: "Stop Broadcast"; onTriggered: bridge.stopBroadcast() }
+            // ==== BROADCAST ====
+            MenuButton {
+                text: "Broadcast"
+                onClicked: panelManager.navigateTo("broadcast")
+                active: panelManager.activePanel === "broadcast"
             }
 
-            // ==== AI & AUTOMATION ====
-            VCSectionHeader {
-                title: "AI"
-                onClicked: aiMenu.open()
-            }
-            Menu {
-                id: aiMenu
-                MenuItem { text: "Face Recognition"; onTriggered: bridge.openFaceRecognitionSettings() }
-                MenuItem { text: "Talent Database"; onTriggered: bridge.openTalentDatabase() }
-                MenuSeparator {}
-                MenuItem { text: "Auto-Overlay Rules"; onTriggered: bridge.openAutoOverlayRules() }
-                MenuItem { text: "AI Diagnostics"; onTriggered: bridge.openAiDiagnostics() }
+            // ==== AI ====
+            MenuButton {
+                text: "AI"
+                onClicked: panelManager.navigateTo("ai")
+                active: panelManager.activePanel === "ai"
             }
 
-            // ==== GRAPHICS & DESIGN ====
-            VCSectionHeader {
-                title: "Graphics"
-                onClicked: graphicsMenu.open()
-            }
-            Menu {
-                id: graphicsMenu
-                MenuItem { text: "Overlay Templates"; onTriggered: bridge.openOverlayTemplates() }
-                MenuItem { text: "Lower-Third Editor"; onTriggered: bridge.openLowerThirdEditor() }
-                MenuItem { text: "Branding"; onTriggered: bridge.openBrandingSettings() }
-                MenuSeparator {}
-                MenuItem { text: "LUT Manager"; onTriggered: bridge.openLutManager() }
-                MenuItem { text: "Effects Pipeline"; onTriggered: bridge.openEffectsPipeline() }
-                MenuSeparator {}
-                MenuItem { text: "Theme Settings..."; onTriggered: settingsDialog.open() }
+            // ==== GRAPHICS ====
+            MenuButton {
+                text: "Graphics"
+                onClicked: panelManager.navigateTo("graphics")
+                active: panelManager.activePanel === "graphics"
             }
 
             // ==== STREAMING ====
-            VCSectionHeader {
-                title: "Streaming"
-                onClicked: streamingMenu.open()
-            }
-            Menu {
-                id: streamingMenu
-                MenuItem { text: "YouTube Setup"; onTriggered: bridge.openYouTubeSetup() }
-                MenuItem { text: "Facebook Setup"; onTriggered: bridge.openFacebookSetup() }
-                MenuItem { text: "Twitch Setup"; onTriggered: bridge.openTwitchSetup() }
-                MenuSeparator {}
-                MenuItem { text: "RTMP Profiles"; onTriggered: bridge.openRtmpProfiles() }
-                MenuItem { text: "Multi-Stream Presets"; onTriggered: bridge.openMultiStreamPresets() }
-                MenuSeparator {}
-                MenuItem { text: "Encoder Settings"; onTriggered: bridge.openEncoderSettings() }
+            MenuButton {
+                text: "Streaming"
+                onClicked: panelManager.navigateTo("streaming")
+                active: panelManager.activePanel === "streaming"
             }
 
             // ==== TOOLS ====
-            VCSectionHeader {
-                title: "Tools"
-                onClicked: toolsMenu.open()
-            }
-            Menu {
-                id: toolsMenu
-                MenuItem { text: "System Monitor"; onTriggered: bridge.openSystemMonitor() }
-                MenuItem { text: "Network Diagnostics"; onTriggered: bridge.openNetworkDiagnostics() }
-                MenuSeparator {}
-                MenuItem { text: "Log Viewer"; onTriggered: bridge.openLogViewer() }
-                MenuItem { text: "Backup / Restore"; onTriggered: bridge.openBackupRestore() }
+            MenuButton {
+                text: "Tools"
+                onClicked: panelManager.navigateTo("tools")
+                active: panelManager.activePanel === "tools"
             }
 
             // ==== VIEW ====
-            VCSectionHeader {
-                title: "View"
-                onClicked: viewMenu.open()
-            }
-            Menu {
-                id: viewMenu
-                MenuItem {
-                    text: "Show Monitoring"
-                    checkable: true
-                    checked: true
-                    onToggled: bottomBar.visible = checked
-                }
-                MenuItem {
-                    text: "Show Left Panel"
-                    checkable: true
-                    checked: true
-                    onToggled: leftAccordionMenu.visible = checked
-                }
-                MenuSeparator {}
-                MenuItem {
-                    text: "Dark/Light Theme"
-                    checkable: true
-                    checked: true
-                    onToggled: bridge.setTheme(checked ? "Dark" : "Light")
-                }
+            MenuButton {
+                text: "View"
+                onClicked: panelManager.navigateTo("view")
+                active: panelManager.activePanel === "view"
             }
 
             // ==== HELP ====
-            VCSectionHeader {
-                title: "Help"
-                onClicked: helpMenu.open()
+            MenuButton {
+                text: "Help"
+                onClicked: panelManager.navigateTo("help")
+                active: panelManager.activePanel === "help"
             }
-            Menu {
-                id: helpMenu
-                MenuItem { text: "User Manual"; onTriggered: Qt.openUrlExternally("https://visioncast.prestige.tech/docs") }
-                MenuItem { text: "Shortcuts"; onTriggered: shortcutsDialog.open() }
-                MenuSeparator {}
-                MenuItem { text: "About VisionCast-AI"; onTriggered: aboutDialog.open() }
+
+            Item { Layout.fillWidth: true }
+
+            // Live indicator
+            Rectangle {
+                id: liveIndicator
+                visible: false
+                width: liveText.implicitWidth + 20
+                height: 28
+                radius: 14
+                color: "#F85149"
+                opacity: 0.9
+
+                RowLayout {
+                    anchors.centerIn: parent
+                    spacing: 6
+
+                    Rectangle {
+                        width: 8
+                        height: 8
+                        radius: 4
+                        color: "#FFFFFF"
+
+                        SequentialAnimation on opacity {
+                            loops: Animation.Infinite
+                            running: liveIndicator.visible
+                            NumberAnimation { to: 0.3; duration: 500 }
+                            NumberAnimation { to: 1.0; duration: 500 }
+                        }
+                    }
+
+                    Text {
+                        id: liveText
+                        text: "LIVE"
+                        color: "#FFFFFF"
+                        font.pixelSize: 11
+                        font.weight: Font.Bold
+                    }
+                }
             }
         }
     }
@@ -192,311 +208,196 @@ ApplicationWindow {
     // == Interface principale ==
     Rectangle {
         anchors.fill: parent
-        color: Qt.rgba(0.05,0.07,0.09,1)
+        color: "#0D1117"
 
-        // TOP BAR (déjà moderne)
-        Rectangle {
-            id:     topBar
-            anchors { top: parent.top; left: parent.left; right: parent.right }
-            height: 48
-            color:  "#161B22"
-            z:      10
-            // Note: Top bar can contain sticky logo/status if needed for scrolling layouts.
-        }
-
-        // MAIN
         RowLayout {
-            anchors {
-                top:    topBar.bottom
-                bottom: bottomBar.top
-                left:   parent.left
-                right:  parent.right
-            }
+            anchors.fill: parent
             spacing: 0
 
-            // Left column — Premium Accordion Menu (160px)
-            Rectangle {
-                id: leftAccordionMenu
-                Layout.preferredWidth: 160
-                Layout.minimumWidth: 160
-                Layout.maximumWidth: 160
+            // ── Center: Program/Preview Area ──────────────────────────
+            ColumnLayout {
+                Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: "#161B22"
+                spacing: 0
 
-                // Prestige gradient header
-                Rectangle {
-                    id: accordionHeader
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: 44
-                    z: 2
+                // Program/Preview views
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-                    gradient: Gradient {
-                        orientation: Gradient.Horizontal
-                        GradientStop { position: 0.0; color: "#1A2332" }
-                        GradientStop { position: 1.0; color: "#1F6FEB22" }
-                    }
-
-                    // Bottom border
-                    Rectangle {
-                        anchors.bottom: parent.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        height: 1
-                        color: "#30363D"
-                    }
-
-                    // Logo / Brand
-                    Row {
-                        anchors.centerIn: parent
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 8
                         spacing: 8
 
+                        // Program View (Main output)
+                        ProgramView {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.preferredHeight: parent.height * 0.55
+                        }
+
+                        // Separator
                         Rectangle {
-                            width: 24; height: 24; radius: 6
-                            gradient: Gradient {
-                                orientation: Gradient.Horizontal
-                                GradientStop { position: 0.0; color: "#1F6FEB" }
-                                GradientStop { position: 1.0; color: "#A855F7" }
-                            }
-                            Text {
-                                anchors.centerIn: parent
-                                text: "VC"
-                                color: "#FFFFFF"
-                                font.pixelSize: 9
-                                font.weight: Font.Bold
-                            }
+                            Layout.fillWidth: true
+                            height: 1
+                            color: "#30363D"
                         }
 
-                        Text {
-                            text: "PANELS"
-                            color: "#8B949E"
-                            font.pixelSize: 10
-                            font.weight: Font.DemiBold
-                            font.letterSpacing: 1.2
-                            anchors.verticalCenter: parent.verticalCenter
+                        // Preview View
+                        PreviewView {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.preferredHeight: parent.height * 0.45
                         }
                     }
                 }
 
-                // Scrollable accordion sections
-                Flickable {
-                    id: accordionFlickable
-                    anchors.top: accordionHeader.bottom
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    contentHeight: accordionColumn.height
-                    clip: true
-                    boundsBehavior: Flickable.StopAtBounds
-
-                    ScrollBar.vertical: ScrollBar {
-                        policy: ScrollBar.AsNeeded
-                        width: 4
-                    }
-
-                    Column {
-                        id: accordionColumn
-                        width: parent.width
-                        spacing: 0
-
-                        // 🎥 Sources
-                        AccordionSection {
-                            sectionIcon: "🎥"
-                            sectionTitle: "Sources"
-                            expandedHeight: 350
-                            panelComponent: Component { SourcePanel { } }
-                        }
-
-                        // 🎨 Design
-                        AccordionSection {
-                            sectionIcon: "🎨"
-                            sectionTitle: "Design"
-                            expandedHeight: 320
-                            panelComponent: Component { DesignPanel { } }
-                        }
-
-                        // 👤 Talent
-                        AccordionSection {
-                            sectionIcon: "👤"
-                            sectionTitle: "Talent"
-                            expandedHeight: 400
-                            panelComponent: Component { TalentPanel { } }
-                        }
-
-                        // 🖼️ Overlay
-                        AccordionSection {
-                            sectionIcon: "🖼️"
-                            sectionTitle: "Overlay"
-                            expandedHeight: 400
-                            panelComponent: Component { OverlayPanel { } }
-                        }
-
-                        // 🔍 Recognition
-                        AccordionSection {
-                            sectionIcon: "🔍"
-                            sectionTitle: "Recognition"
-                            expandedHeight: 280
-                            panelComponent: Component { RecognitionPanel { } }
-                        }
-
-                        // 📊 Monitoring
-                        AccordionSection {
-                            sectionIcon: "📊"
-                            sectionTitle: "Monitoring"
-                            expandedHeight: 220
-                            panelComponent: Component { MonitoringPanel { } }
-                        }
-
-                        // 📡 Multi-Streaming
-                        AccordionSection {
-                            sectionIcon: "📡"
-                            sectionTitle: "Multi-Stream"
-                            expandedHeight: 380
-                            panelComponent: Component { MultiStreamPanel { } }
-                        }
-
-                        // 🔌 Output
-                        AccordionSection {
-                            sectionIcon: "🔌"
-                            sectionTitle: "Output"
-                            expandedHeight: 250
-                            panelComponent: Component { OutputPanel { } }
-                        }
-
-                        // ✨ Effects
-                        AccordionSection {
-                            sectionIcon: "✨"
-                            sectionTitle: "Effects"
-                            expandedHeight: 350
-                            panelComponent: Component { EffectsPanel { } }
-                        }
-
-                        // ⚙️ Settings
-                        AccordionSection {
-                            sectionIcon: "⚙️"
-                            sectionTitle: "Settings"
-                            expandedHeight: 380
-                            panelComponent: Component { SettingsPanel { } }
-                        }
-
-                        // ℹ️ About
-                        AccordionSection {
-                            sectionIcon: "ℹ️"
-                            sectionTitle: "About"
-                            expandedHeight: 280
-                            panelComponent: Component { AboutPanel { } }
-                        }
-                    }
-                }
-
-                // Right border separator
+                // Bottom bar separator
                 Rectangle {
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    width: 1
+                    Layout.fillWidth: true
+                    height: 1
                     color: "#30363D"
                 }
-            }
-            Rectangle { Layout.preferredWidth: 1; Layout.fillHeight: true; color: "#30363D" }
 
-            // Center: Program/Preview
-            ColumnLayout {
-                Layout.fillWidth:  true
-                Layout.fillHeight: true
-                spacing: 0
+                // ── Bottom Bar: Monitoring & Controls ─────────────────
+                Rectangle {
+                    id: bottomBar
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 180
+                    color: "#161B22"
 
-                ProgramView {
-                    Layout.fillWidth:  true
-                    Layout.fillHeight: true
-                    Layout.preferredHeight: parent.height * 0.55
-                    Layout.margins: 8
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: 0
+
+                        // Monitoring Panel
+                        MonitoringPanel {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                        }
+
+                        Rectangle {
+                            Layout.preferredWidth: 1
+                            Layout.fillHeight: true
+                            color: "#30363D"
+                        }
+
+                        // Multi-Stream Panel
+                        MultiStreamPanel {
+                            Layout.preferredWidth: 400
+                            Layout.minimumWidth: 320
+                            Layout.fillHeight: true
+                        }
+
+                        Rectangle {
+                            Layout.preferredWidth: 1
+                            Layout.fillHeight: true
+                            color: "#30363D"
+                        }
+
+                        // Output Panel
+                        OutputPanel {
+                            Layout.preferredWidth: 280
+                            Layout.fillHeight: true
+                        }
+                    }
                 }
-                Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; color: "#30363D" }
-                PreviewView {
-                    Layout.fillWidth:  true
-                    Layout.fillHeight: true
-                    Layout.preferredHeight: parent.height * 0.45
-                    Layout.margins: 8
-                }
             }
-            Rectangle { Layout.preferredWidth: 1; Layout.fillHeight: true; color: "#30363D" }
 
-            // Right: Tabbed panel
+            // Vertical separator
             Rectangle {
-                Layout.preferredWidth: 360
-                Layout.minimumWidth:   260
-                Layout.fillHeight:     true
-                color: "#161B22"
+                Layout.preferredWidth: 1
+                Layout.fillHeight: true
+                color: "#30363D"
+            }
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 0
+            // ── Right Panel Container ─────────────────────────────────
+            RightPanelContainer {
+                id: rightPanelContainer
+                Layout.preferredWidth: 420
+                Layout.minimumWidth: 360
+                Layout.maximumWidth: 520
+                Layout.fillHeight: true
+                panelManager: panelManager
+            }
+        }
 
-                    // Tab bar/code inchangé
+        // ── Quick Panel Access Bar ────────────────────────────────────
+        Rectangle {
+            id: quickAccessBar
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: bottomBar.top
+            width: 52
+            color: "#161B22"
+            z: 5
+
+            // Left border
+            Rectangle {
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: 1
+                color: "#30363D"
+            }
+
+            Column {
+                anchors.fill: parent
+                anchors.topMargin: 12
+                spacing: 8
+
+                // Panel quick access buttons
+                Repeater {
+                    model: [
+                        { id: "sources", icon: "🎥", tip: "Sources" },
+                        { id: "design", icon: "🎨", tip: "Design" },
+                        { id: "talent", icon: "👤", tip: "Talent" },
+                        { id: "overlay", icon: "🖼️", tip: "Overlay" },
+                        { id: "recognition", icon: "🔍", tip: "Recognition" },
+                        { id: "monitoring", icon: "📊", tip: "Monitoring" },
+                        { id: "multistream", icon: "📡", tip: "Multi-Stream" },
+                        { id: "output", icon: "🔌", tip: "Output" },
+                        { id: "effects", icon: "✨", tip: "Effects" },
+                        { id: "settings", icon: "⚙️", tip: "Settings" },
+                        { id: "about", icon: "ℹ️", tip: "About" }
+                    ]
+
                     Rectangle {
-                        Layout.fillWidth: true
-                        height: 42
-                        color:  "#1C2128"
-                        // ... [inchangé]
-                    }
+                        width: 40
+                        height: 40
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        radius: 8
+                        color: panelManager.activePanel === modelData.id ?
+                               "#1F6FEB33" :
+                               (quickAccessArea.containsMouse ? "#21262D" : "transparent")
+                        border.color: panelManager.activePanel === modelData.id ? "#1F6FEB" : "transparent"
+                        border.width: 1
 
-                    // Tab contents inchangé
-                    Item {
-                        id:               rightPanel
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        property int currentTab: 0
+                        Behavior on color { ColorAnimation { duration: 100 } }
 
-                        TalentPanel {
-                            anchors.fill: parent
-                            visible:      rightPanel.currentTab === 0
-
-                            Behavior on opacity { NumberAnimation { duration: 200 } }
-                            opacity: visible ? 1.0 : 0.0
+                        Text {
+                            anchors.centerIn: parent
+                            text: modelData.icon
+                            font.pixelSize: 16
                         }
-                        OverlayPanel {
-                            anchors.fill: parent
-                            visible:      rightPanel.currentTab === 1
 
-                            Behavior on opacity { NumberAnimation { duration: 200 } }
-                            opacity: visible ? 1.0 : 0.0
-                        }
-                        RecognitionPanel {
+                        MouseArea {
+                            id: quickAccessArea
                             anchors.fill: parent
-                            visible:      rightPanel.currentTab === 2
+                            cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+                            onClicked: panelManager.navigateTo(modelData.id)
 
-                            Behavior on opacity { NumberAnimation { duration: 200 } }
-                            opacity: visible ? 1.0 : 0.0
+                            ToolTip.visible: containsMouse
+                            ToolTip.text: modelData.tip
+                            ToolTip.delay: 500
                         }
                     }
                 }
             }
         }
-
-        // BOTTOM BAR
-        Rectangle {
-            id:     bottomBar
-            anchors { bottom: parent.bottom; left: parent.left; right: parent.right }
-            height: 200
-            color:  "#161B22"
-            z:      5
-
-            Rectangle { anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right; height: 1; color: "#30363D" }
-
-            RowLayout {
-                anchors { fill: parent }
-                spacing: 0
-
-                MonitoringPanel { Layout.fillWidth:  true; Layout.fillHeight: true }
-                Rectangle { Layout.preferredWidth: 1; Layout.fillHeight: true; color: "#30363D" }
-                MultiStreamPanel { Layout.preferredWidth: 480; Layout.minimumWidth: 340; Layout.fillHeight: true }
-                Rectangle { Layout.preferredWidth: 1; Layout.fillHeight: true; color: "#30363D" }
-                OutputPanel { Layout.preferredWidth: 300; Layout.fillHeight: true }
-            }
-        }
-    } // end Rectangle
+    } // end main Rectangle
 
     // == TOAST notification ==
     Rectangle {
@@ -867,6 +768,42 @@ ApplicationWindow {
             color: "#E6EDF3"
             font.pixelSize: 12
             anchors.verticalCenter: parent.verticalCenter
+        }
+    }
+
+    // == MenuButton component for menu bar ==
+    component MenuButton: Rectangle {
+        property string text: ""
+        property bool active: false
+        signal clicked()
+
+        width: menuBtnText.implicitWidth + 24
+        height: 32
+        radius: 6
+        color: active ? "#1F6FEB33" : (menuBtnArea.containsMouse ? "#21262D" : "transparent")
+        border.color: active ? "#1F6FEB" : "transparent"
+        border.width: 1
+
+        Behavior on color { ColorAnimation { duration: 100 } }
+
+        Text {
+            id: menuBtnText
+            anchors.centerIn: parent
+            text: parent.text
+            color: active ? "#58A6FF" : (menuBtnArea.containsMouse ? "#E6EDF3" : "#8B949E")
+            font.pixelSize: 12
+            font.weight: active ? Font.DemiBold : Font.Normal
+            font.family: "Segoe UI, Inter, Helvetica Neue, Arial"
+
+            Behavior on color { ColorAnimation { duration: 100 } }
+        }
+
+        MouseArea {
+            id: menuBtnArea
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            hoverEnabled: true
+            onClicked: parent.clicked()
         }
     }
 }

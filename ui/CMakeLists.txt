@@ -102,6 +102,8 @@ if(_have_quick)
             qml/components/VCTalentCard.qml
             qml/components/VCToggleSwitch.qml
             qml/components/VCVideoThumbnail.qml
+            qml/components/PanelManager.qml
+            qml/components/RightPanelContainer.qml
 
             # Panels
             qml/panels/AboutPanel.qml
@@ -117,6 +119,14 @@ if(_have_quick)
             qml/panels/SettingsPanel.qml
             qml/panels/SourcePanel.qml
             qml/panels/TalentPanel.qml
+            qml/panels/ChannelPanel.qml
+            qml/panels/BroadcastPanel.qml
+            qml/panels/AIPanel.qml
+            qml/panels/GraphicsPanel.qml
+            qml/panels/StreamingPanel.qml
+            qml/panels/ToolsPanel.qml
+            qml/panels/ViewPanel.qml
+            qml/panels/HelpPanel.qml
 
             # Theme
             qml/theme/VCColors.qml

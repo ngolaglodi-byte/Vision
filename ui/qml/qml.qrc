@@ -17,6 +17,14 @@
         <file alias="panels/EffectsPanel.qml">panels/EffectsPanel.qml</file>
         <file alias="panels/SettingsPanel.qml">panels/SettingsPanel.qml</file>
         <file alias="panels/AboutPanel.qml">panels/AboutPanel.qml</file>
+        <file alias="panels/ChannelPanel.qml">panels/ChannelPanel.qml</file>
+        <file alias="panels/BroadcastPanel.qml">panels/BroadcastPanel.qml</file>
+        <file alias="panels/AIPanel.qml">panels/AIPanel.qml</file>
+        <file alias="panels/GraphicsPanel.qml">panels/GraphicsPanel.qml</file>
+        <file alias="panels/StreamingPanel.qml">panels/StreamingPanel.qml</file>
+        <file alias="panels/ToolsPanel.qml">panels/ToolsPanel.qml</file>
+        <file alias="panels/ViewPanel.qml">panels/ViewPanel.qml</file>
+        <file alias="panels/HelpPanel.qml">panels/HelpPanel.qml</file>
 
         <!-- Components -->
         <file alias="components/VCButton.qml">components/VCButton.qml</file>
@@ -30,6 +38,8 @@
         <file alias="components/VCMetricGauge.qml">components/VCMetricGauge.qml</file>
         <file alias="components/VCToggleSwitch.qml">components/VCToggleSwitch.qml</file>
         <file alias="components/AccordionSection.qml">components/AccordionSection.qml</file>
+        <file alias="components/PanelManager.qml">components/PanelManager.qml</file>
+        <file alias="components/RightPanelContainer.qml">components/RightPanelContainer.qml</file>
 
         <!-- Theme -->
         <file alias="theme/VCTheme.qml">theme/VCTheme.qml</file>
