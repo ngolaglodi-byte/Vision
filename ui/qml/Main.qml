@@ -20,6 +20,12 @@ ApplicationWindow {
     title: "VisionCast-AI — Broadcast Control Room"
     color: "#0D1117"
 
+    // ── Theme Constants ───────────────────────────────────────────────
+    readonly property int menuBarHeight: 44
+    readonly property int bottomBarHeight: 180
+    readonly property int quickAccessBarWidth: 52
+    readonly property int rightPanelWidth: 420
+
     // ── Panel Manager instance ────────────────────────────────────────
     PanelManager {
         id: panelManager
@@ -28,7 +34,7 @@ ApplicationWindow {
     // == Menu bar modernisée (QtQuick Controls 2 compatible) ==
     // == Professional broadcast-level menu system ==
     menuBar: Rectangle {
-        height: 44
+        height: root.menuBarHeight
         color: "#161B22"
 
         // Top gradient accent
@@ -264,7 +270,7 @@ ApplicationWindow {
                 Rectangle {
                     id: bottomBar
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 180
+                    Layout.preferredHeight: root.bottomBarHeight
                     color: "#161B22"
 
                     RowLayout {
@@ -315,7 +321,7 @@ ApplicationWindow {
             // ── Right Panel Container ─────────────────────────────────
             RightPanelContainer {
                 id: rightPanelContainer
-                Layout.preferredWidth: 420
+                Layout.preferredWidth: root.rightPanelWidth
                 Layout.minimumWidth: 360
                 Layout.maximumWidth: 520
                 Layout.fillHeight: true
@@ -329,7 +335,7 @@ ApplicationWindow {
             anchors.left: parent.left
             anchors.top: parent.top
             anchors.bottom: bottomBar.top
-            width: 52
+            width: root.quickAccessBarWidth
             color: "#161B22"
             z: 5
 

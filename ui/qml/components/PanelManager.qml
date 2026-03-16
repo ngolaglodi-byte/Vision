@@ -43,11 +43,11 @@ QtObject {
     function navigateTo(panelId) {
         if (panelId !== activePanel) {
             previousPanel = activePanel
-            panelHistory.push(activePanel)
-            // Limit history to 20 items
-            if (panelHistory.length > 20) {
+            // Limit history to 20 items - check before adding
+            if (panelHistory.length >= 20) {
                 panelHistory.shift()
             }
+            panelHistory.push(activePanel)
             activePanel = panelId
         }
     }

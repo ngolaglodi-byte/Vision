@@ -19,6 +19,14 @@ Rectangle {
     // ── Current active panel ──────────────────────────────────────────
     property string activePanel: panelManager ? panelManager.activePanel : "sources"
 
+    // ── Cached panel info to avoid repeated lookups ───────────────────
+    property var currentPanelInfo: {
+        if (panelManager) {
+            return panelManager.getPanelInfo(activePanel)
+        }
+        return { icon: "📄", title: "Panel", description: "" }
+    }
+
     // ── Panel navigation header ───────────────────────────────────────
     Rectangle {
         id: panelHeader
@@ -91,7 +99,7 @@ Rectangle {
             // Panel icon
             Text {
                 id: panelIcon
-                text: panelManager ? panelManager.getPanelInfo(activePanel).icon : "📄"
+                text: root.currentPanelInfo.icon
                 font.pixelSize: 20
             }
 
@@ -101,7 +109,7 @@ Rectangle {
                 spacing: 2
 
                 Text {
-                    text: panelManager ? panelManager.getPanelInfo(activePanel).title : "Panel"
+                    text: root.currentPanelInfo.title
                     color: "#E6EDF3"
                     font.pixelSize: 14
                     font.weight: Font.Bold
@@ -109,7 +117,7 @@ Rectangle {
                 }
 
                 Text {
-                    text: panelManager ? panelManager.getPanelInfo(activePanel).description : ""
+                    text: root.currentPanelInfo.description
                     color: "#8B949E"
                     font.pixelSize: 11
                     font.family: "Segoe UI, Inter, Helvetica Neue, Arial"

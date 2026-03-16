@@ -275,8 +275,11 @@ Rectangle {
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: {
-                                        root.currentTheme = modelData.name
-                                        bridge.setTheme(modelData.name)
+                                        // Only call setTheme if the theme actually changes
+                                        if (root.currentTheme !== modelData.name) {
+                                            root.currentTheme = modelData.name
+                                            bridge.setTheme(modelData.name)
+                                        }
                                     }
                                 }
                             }
