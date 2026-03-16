@@ -107,26 +107,25 @@ if(_have_quick)
 
             # Panels
             qml/panels/AboutPanel.qml
+            qml/panels/AIPanel.qml
+            qml/panels/BroadcastPanel.qml
+            qml/panels/ChannelPanel.qml
             qml/panels/DesignPanel.qml
             qml/panels/EffectsPanel.qml
+            qml/panels/GraphicsPanel.qml
+            qml/panels/HelpPanel.qml
+            qml/panels/LiveOutputView.qml
             qml/panels/MonitoringPanel.qml
             qml/panels/MultiStreamPanel.qml
             qml/panels/OutputPanel.qml
             qml/panels/OverlayPanel.qml
-            qml/panels/PreviewView.qml
-            qml/panels/ProgramView.qml
             qml/panels/RecognitionPanel.qml
             qml/panels/SettingsPanel.qml
             qml/panels/SourcePanel.qml
-            qml/panels/TalentPanel.qml
-            qml/panels/ChannelPanel.qml
-            qml/panels/BroadcastPanel.qml
-            qml/panels/AIPanel.qml
-            qml/panels/GraphicsPanel.qml
             qml/panels/StreamingPanel.qml
+            qml/panels/TalentPanel.qml
             qml/panels/ToolsPanel.qml
             qml/panels/ViewPanel.qml
-            qml/panels/HelpPanel.qml
 
             # Theme
             qml/theme/VCColors.qml
