@@ -97,11 +97,11 @@ Rectangle {
 
         delegate: VCVideoThumbnail {
             width:      sourceList.width
-            sourceName: modelData.name       ?? ""
-            deviceType: modelData.deviceType ?? ""
+            sourceName: modelData && modelData.name !== undefined ? modelData.name : ""
+            deviceType: modelData && modelData.deviceType !== undefined ? modelData.deviceType : ""
             selected:   sourceList.currentIndex === index
             visible:    root.filterText.length === 0 ||
-                        modelData.name.toLowerCase().includes(root.filterText.toLowerCase())
+                        (modelData && modelData.name ? modelData.name.toLowerCase().includes(root.filterText.toLowerCase()) : false)
 
             onClicked: {
                 sourceList.currentIndex = index

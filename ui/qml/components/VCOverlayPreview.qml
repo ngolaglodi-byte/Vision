@@ -61,7 +61,7 @@ Rectangle {
             width:          parent.width
         }
         Text {
-            text:           root.type.replace(/_/g, " ").toUpperCase()
+            text:           root.type.split("_").join(" ").toUpperCase()
             color:          "#8B949E"
             font.pixelSize: 9
             font.letterSpacing: 0.8
