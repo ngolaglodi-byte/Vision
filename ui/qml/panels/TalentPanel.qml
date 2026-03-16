@@ -298,7 +298,7 @@ Rectangle {
                                     var path = root.talentPhoto
                                     if (!path) return "No photo selected"
                                     // Replace backslashes with forward slashes for consistency
-                                    path = path.replace(/\\/g, "/")
+                                    path = path.split("\\").join("/")
                                     var parts = path.split("/")
                                     return parts[parts.length - 1]
                                 }

@@ -97,8 +97,8 @@ Rectangle {
 
         delegate: VCVideoThumbnail {
             width:      sourceList.width
-            sourceName: modelData.name       ?? ""
-            deviceType: modelData.deviceType ?? ""
+            sourceName: modelData.name       || ""
+            deviceType: modelData.deviceType || ""
             selected:   sourceList.currentIndex === index
             visible:    root.filterText.length === 0 ||
                         modelData.name.toLowerCase().includes(root.filterText.toLowerCase())

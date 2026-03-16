@@ -68,19 +68,21 @@ Rectangle {
         id:      clearBtn
         visible: field.text.length > 0
         text:    "\u2717"
-        color:   "#8B949E"
+        color:   clearBtnArea.containsMouse ? "#E6EDF3" : "#8B949E"
         font.pixelSize: 11
         anchors.right:          parent.right
         anchors.rightMargin:    8
         anchors.verticalCenter: parent.verticalCenter
 
+        Behavior on color { ColorAnimation { duration: 100 } }
+
         MouseArea {
+            id:           clearBtnArea
             anchors.fill: parent
+            hoverEnabled: true
             cursorShape:  Qt.PointingHandCursor
             onClicked:    { field.text = ""; root.searchTextChanged(""); field.forceActiveFocus() }
         }
-
-        HoverHandler { onHoveredChanged: clearBtn.color = hovered ? "#E6EDF3" : "#8B949E" }
     }
 
     // Click anywhere on the card to focus the input
