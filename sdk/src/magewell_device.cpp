@@ -86,19 +86,18 @@ bool MagewellDevice::open(const DeviceConfig& config) {
     }
     
     // SDK 3.3.1: Use MWGetDevicePath + MWOpenChannelByPath instead of MWOpenChannelByIndex
-    char devicePath[256] = {0};
-    MW_RESULT pathResult = MWGetDevicePath(config.deviceIndex, devicePath);
+    // Use impl_->devicePath directly to avoid unnecessary buffer copy
+    MW_RESULT pathResult = MWGetDevicePath(config.deviceIndex, impl_->devicePath);
     if (pathResult != MW_SUCCEEDED) {
         SDKLogger::error(TAG, "MWGetDevicePath failed for index " +
                               std::to_string(config.deviceIndex));
         return false;
     }
-    std::strncpy(impl_->devicePath, devicePath, sizeof(impl_->devicePath) - 1);
     
-    impl_->channel = MWOpenChannelByPath(devicePath);
+    impl_->channel = MWOpenChannelByPath(impl_->devicePath);
     if (!impl_->channel) {
         SDKLogger::error(TAG, "MWOpenChannelByPath failed for path: " +
-                              std::string(devicePath));
+                              std::string(impl_->devicePath));
         return false;
     }
     
@@ -165,7 +164,9 @@ std::vector<DeviceConfig> MagewellDevice::enumerateDevices() {
 #ifdef HAS_MAGEWELL
     std::vector<DeviceConfig> devices;
     
-    // Ensure SDK is initialized for enumeration
+    // Ensure SDK is initialized for enumeration.
+    // The SDK lifecycle is managed per-enumeration since this is a static method
+    // that may be called without any MagewellDevice instances existing.
     initMagewellSDK();
     
     MWRefreshDevice();
@@ -189,10 +190,12 @@ std::vector<DeviceConfig> MagewellDevice::enumerateDevices() {
         else
             cfg.name = "Magewell";
         devices.push_back(cfg);
+        
+        // Close channel before potentially exiting SDK
         MWCloseChannel(ch);
     }
     
-    // Release SDK reference from enumeration
+    // Release SDK reference from enumeration after all channels are closed
     exitMagewellSDK();
     
     SDKLogger::info(TAG, "enumerateDevices() found " +
