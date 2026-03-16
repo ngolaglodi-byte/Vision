@@ -1,5 +1,12 @@
 /// @file magewell_input.cpp
 /// @brief Magewell capture-only implementation.
+///
+/// Updated for Magewell Capture SDK 3.3.1 compatibility.
+/// Changes from 3.2.x:
+/// - Uses MWCaptureInitInstance/MWCaptureExitInstance for SDK lifecycle
+/// - Uses MWGetDevicePath + MWOpenChannelByPath instead of MWOpenChannelByIndex
+/// - Uses MWGetChannelInfoByIndex for device enumeration
+/// - Uses MWFOURCC_UYVY instead of deprecated FOURCC_UYV2
 
 #include "visioncast_sdk/magewell_input.h"
 #include "visioncast_sdk/sdk_error.h"
@@ -7,13 +14,49 @@
 
 #ifdef HAS_MAGEWELL
 #include "LibMWCapture/MWCapture.h"
+#ifdef _WIN32
 #include <windows.h>
+#else
+// Non-Windows platforms need alternate event handling
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/eventfd.h>
+#include <sys/select.h>
+#endif
 #endif
 
 #include <mutex>
 #include <vector>
+#include <atomic>
+#include <cstring>
 
 static const char* TAG = "MagewellInput";
+
+#ifdef HAS_MAGEWELL
+// Global SDK initialization counter for thread-safe reference counting.
+// Multiple MagewellDevice/MagewellInput instances may coexist.
+// Note: These are shared with magewell_device.cpp when both are linked.
+extern std::atomic<int> s_sdkRefCount;
+extern std::mutex s_sdkMutex;
+
+/// Initialize the Magewell SDK if not already initialized.
+static void initMagewellInputSDK() {
+    std::lock_guard<std::mutex> lock(s_sdkMutex);
+    if (s_sdkRefCount.fetch_add(1) == 0) {
+        MWCaptureInitInstance();
+        SDKLogger::info(TAG, "MWCaptureInitInstance() called");
+    }
+}
+
+/// Exit the Magewell SDK if this is the last reference.
+static void exitMagewellInputSDK() {
+    std::lock_guard<std::mutex> lock(s_sdkMutex);
+    if (s_sdkRefCount.fetch_sub(1) == 1) {
+        MWCaptureExitInstance();
+        SDKLogger::info(TAG, "MWCaptureExitInstance() called");
+    }
+}
+#endif
 
 struct MagewellInput::Impl {
     bool isOpen = false;
@@ -27,12 +70,27 @@ struct MagewellInput::Impl {
 
 #ifdef HAS_MAGEWELL
     HCHANNEL channel    = nullptr;
+    char devicePath[256] = {0};
+#ifdef _WIN32
     HANDLE   notifyEvent = nullptr;
+#else
+    // Linux/macOS: use file descriptor for event notification
+    int      notifyFd    = -1;
+#endif
 #endif
 };
 
-MagewellInput::MagewellInput() : impl_(std::make_unique<Impl>()) {}
-MagewellInput::~MagewellInput() { close(); }
+MagewellInput::MagewellInput() : impl_(std::make_unique<Impl>()) {
+#ifdef HAS_MAGEWELL
+    initMagewellInputSDK();
+#endif
+}
+MagewellInput::~MagewellInput() {
+    close();
+#ifdef HAS_MAGEWELL
+    exitMagewellInputSDK();
+#endif
+}
 
 bool MagewellInput::open(const DeviceConfig& config) {
 #ifdef HAS_MAGEWELL
@@ -46,13 +104,26 @@ bool MagewellInput::open(const DeviceConfig& config) {
                               std::to_string(config.deviceIndex));
         return false;
     }
-    impl_->channel = MWOpenChannelByIndex(config.deviceIndex);
-    if (!impl_->channel) {
-        SDKLogger::error(TAG, "MWOpenChannelByIndex failed");
+    
+    // SDK 3.3.1: Use MWGetDevicePath + MWOpenChannelByPath instead of MWOpenChannelByIndex
+    // Use impl_->devicePath directly to avoid unnecessary buffer copy
+    MW_RESULT pathResult = MWGetDevicePath(config.deviceIndex, impl_->devicePath);
+    if (pathResult != MW_SUCCEEDED) {
+        SDKLogger::error(TAG, "MWGetDevicePath failed for index " +
+                              std::to_string(config.deviceIndex));
         return false;
     }
+    
+    impl_->channel = MWOpenChannelByPath(impl_->devicePath);
+    if (!impl_->channel) {
+        SDKLogger::error(TAG, "MWOpenChannelByPath failed for path: " +
+                              std::string(impl_->devicePath));
+        return false;
+    }
+    
+    // SDK 3.3.1: Use MWGetChannelInfoByIndex for device info
     MWCAP_CHANNEL_INFO info;
-    if (MWGetChannelInfo(impl_->channel, &info) == MW_SUCCEEDED) {
+    if (MWGetChannelInfoByIndex(config.deviceIndex, &info) == MW_SUCCEEDED) {
         impl_->name = config.name.empty()
                       ? std::string(info.szProductName)
                       : config.name;
@@ -75,10 +146,17 @@ void MagewellInput::close() {
     if (impl_->capturing) {
 #ifdef HAS_MAGEWELL
         MWStopVideoCapture(impl_->channel);
+#ifdef _WIN32
         if (impl_->notifyEvent) {
             CloseHandle(impl_->notifyEvent);
             impl_->notifyEvent = nullptr;
         }
+#else
+        if (impl_->notifyFd >= 0) {
+            ::close(impl_->notifyFd);
+            impl_->notifyFd = -1;
+        }
+#endif
 #endif
         impl_->capturing = false;
     }
@@ -119,6 +197,7 @@ bool MagewellInput::startCapture(const VideoMode& mode) {
                          std::to_string(mode.height) + "@" +
                          std::to_string(mode.frameRate));
 
+#ifdef _WIN32
     impl_->notifyEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
     MW_RESULT res = MWStartVideoCapture(impl_->channel, impl_->notifyEvent);
     if (res != MW_SUCCEEDED) {
@@ -127,6 +206,22 @@ bool MagewellInput::startCapture(const VideoMode& mode) {
         impl_->notifyEvent = nullptr;
         return false;
     }
+#else
+    // Linux/macOS: Use eventfd or similar mechanism
+    impl_->notifyFd = eventfd(0, EFD_NONBLOCK);
+    MWCAP_PTR notifyPtr = (impl_->notifyFd >= 0) 
+                          ? reinterpret_cast<MWCAP_PTR>(impl_->notifyFd) 
+                          : 0;
+    MW_RESULT res = MWStartVideoCapture(impl_->channel, notifyPtr);
+    if (res != MW_SUCCEEDED) {
+        SDKLogger::error(TAG, "MWStartVideoCapture failed");
+        if (impl_->notifyFd >= 0) {
+            ::close(impl_->notifyFd);
+            impl_->notifyFd = -1;
+        }
+        return false;
+    }
+#endif
     const int stride = mode.width * 2; // UYVY: 2 bytes per pixel
     impl_->frameBuf.resize(static_cast<size_t>(stride) * mode.height);
     impl_->currentMode = mode;
@@ -134,6 +229,7 @@ bool MagewellInput::startCapture(const VideoMode& mode) {
     SDKLogger::info(TAG, "Magewell capture started");
     return true;
 #else
+    (void)mode; // Suppress unused parameter warning
     return false;
 #endif
 }
@@ -144,10 +240,17 @@ bool MagewellInput::stopCapture() {
     SDKLogger::info(TAG, "Stopping Magewell capture");
 #ifdef HAS_MAGEWELL
     MWStopVideoCapture(impl_->channel);
+#ifdef _WIN32
     if (impl_->notifyEvent) {
         CloseHandle(impl_->notifyEvent);
         impl_->notifyEvent = nullptr;
     }
+#else
+    if (impl_->notifyFd >= 0) {
+        ::close(impl_->notifyFd);
+        impl_->notifyFd = -1;
+    }
+#endif
 #endif
     impl_->capturing = false;
     return true;
@@ -162,9 +265,24 @@ VideoFrame MagewellInput::captureFrame() {
     const int stride = width * 2; // UYVY
 
     // Wait for a new frame notification (up to 200 ms)
+#ifdef _WIN32
     if (impl_->notifyEvent)
         WaitForSingleObject(impl_->notifyEvent, 200);
+#else
+    // Linux/macOS: wait using select or poll on notifyFd
+    if (impl_->notifyFd >= 0) {
+        fd_set readfds;
+        FD_ZERO(&readfds);
+        FD_SET(impl_->notifyFd, &readfds);
+        struct timeval tv = {0, 200000}; // 200ms
+        select(impl_->notifyFd + 1, &readfds, nullptr, nullptr, &tv);
+        // Clear the event
+        uint64_t val;
+        (void)read(impl_->notifyFd, &val, sizeof(val));
+    }
+#endif
 
+    // SDK 3.3.1: Use MWFOURCC_UYVY instead of deprecated FOURCC_UYV2
     MW_RESULT res = MWCaptureVideoFrameToVirtualAddress(
         impl_->channel,
         -1 /*use current frame*/,
@@ -173,7 +291,7 @@ VideoFrame MagewellInput::captureFrame() {
         static_cast<DWORD>(stride),
         FALSE /*bottom-up*/,
         nullptr /*reserved*/,
-        FOURCC_UYV2,
+        MWFOURCC_UYVY,
         width,
         height);
 
@@ -239,21 +357,41 @@ VideoMode MagewellInput::detectedMode() const {
 std::vector<DeviceConfig> MagewellInput::enumerateDevices() {
 #ifdef HAS_MAGEWELL
     std::vector<DeviceConfig> devices;
+    
+    // Ensure SDK is initialized for enumeration.
+    // The SDK lifecycle is managed per-enumeration since this is a static method
+    // that may be called without any MagewellInput instances existing.
+    initMagewellInputSDK();
+    
     MWRefreshDevice();
     int count = MWGetChannelCount();
     for (int i = 0; i < count; ++i) {
-        HCHANNEL ch = MWOpenChannelByIndex(i);
+        // SDK 3.3.1: Use MWGetDevicePath + MWOpenChannelByPath
+        char devicePath[256] = {0};
+        if (MWGetDevicePath(i, devicePath) != MW_SUCCEEDED) {
+            continue;
+        }
+        
+        HCHANNEL ch = MWOpenChannelByPath(devicePath);
         if (!ch) continue;
+        
+        // SDK 3.3.1: Use MWGetChannelInfoByIndex for device info
         MWCAP_CHANNEL_INFO info;
         DeviceConfig cfg;
         cfg.deviceIndex = i;
-        if (MWGetChannelInfo(ch, &info) == MW_SUCCEEDED)
+        if (MWGetChannelInfoByIndex(i, &info) == MW_SUCCEEDED)
             cfg.name = info.szProductName;
         else
             cfg.name = "Magewell";
         devices.push_back(cfg);
+        
+        // Close channel before potentially exiting SDK
         MWCloseChannel(ch);
     }
+    
+    // Release SDK reference from enumeration after all channels are closed
+    exitMagewellInputSDK();
+    
     SDKLogger::info(TAG, "enumerateDevices() found " +
                          std::to_string(devices.size()) + " Magewell device(s)");
     return devices;

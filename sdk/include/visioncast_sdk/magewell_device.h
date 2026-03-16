@@ -4,6 +4,12 @@
 /// @brief Magewell capture device wrapper.
 ///
 /// Requires the Magewell SDK to be installed in sdk/magewell/.
+///
+/// Updated for Magewell Capture SDK 3.3.1 compatibility:
+/// - Uses MWCaptureInitInstance/MWCaptureExitInstance for SDK lifecycle
+/// - Uses MWGetDevicePath + MWOpenChannelByPath instead of MWOpenChannelByIndex
+/// - Uses MWGetChannelInfoByIndex for device enumeration
+/// - Uses MWFOURCC_UYVY instead of deprecated FOURCC_UYV2
 
 #include "visioncast_sdk/video_device.h"
 
