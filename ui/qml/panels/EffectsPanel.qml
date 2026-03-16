@@ -8,21 +8,20 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import QtQuick.Dialogs 1.3
+import QtQuick.Dialogs
 import "../components"
 
 Rectangle {
     id: root
     color: "#161B22"
 
-    // ── FileDialog for LUT .cube file import ───────────────────────
+    // ── FileDialog for LUT .cube file import (Qt6 compatible) ──────
     FileDialog {
         id: lutFileDialog
         title: "Select LUT File (.cube)"
         nameFilters: ["LUT files (*.cube *.3dl)", "All files (*)"]
-        selectMultiple: false
         onAccepted: {
-            var fileUrl = lutFileDialog.fileUrl.toString()
+            var fileUrl = lutFileDialog.selectedFile.toString()
             var filePath = fileUrl
             if (filePath.startsWith("file:///")) {
                 var afterPrefix = filePath.substring(8)

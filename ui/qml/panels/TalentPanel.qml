@@ -7,7 +7,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import QtQuick.Dialogs 1.3
+import QtQuick.Dialogs
 
 Rectangle {
     id: root
@@ -41,15 +41,14 @@ Rectangle {
         opacity: 0.95
     }
 
-    // ── FileDialog for local photo import ──────────────────────────
+    // ── FileDialog for local photo import (Qt6 compatible) ─────────
     FileDialog {
         id: photoFileDialog
         title: "Select Talent Photo"
         nameFilters: ["Image files (*.jpg *.jpeg *.png *.bmp *.gif)", "All files (*)"]
-        selectMultiple: false
         onAccepted: {
-            // Store the original file URL for Image.source
-            var fileUrl = photoFileDialog.fileUrl.toString()
+            // Store the original file URL for Image.source (Qt6: selectedFile)
+            var fileUrl = photoFileDialog.selectedFile.toString()
             root.internalPhotoUrl = fileUrl
 
             // Convert file URL to local path for display and storage
