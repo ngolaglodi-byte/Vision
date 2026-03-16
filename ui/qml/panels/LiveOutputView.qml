@@ -1,8 +1,10 @@
 // VisionCast-AI — Licence officielle Prestige Technologie Company,
 // développée par Glody Dimputu Ngola.
 //
-// ProgramView.qml — Main program output display.
-//                    Red border + LIVE indicator when on air.
+// LiveOutputView.qml — Live output display showing the incoming switcher
+//                       feed with all VisionCast-AI treatments applied
+//                       (overlays, AI, filters, graphics).
+//                       Red border + LIVE indicator when on air.
 
 import QtQuick 2.15
 import "../components"
@@ -55,31 +57,59 @@ Rectangle {
         }
     }
 
+    // ── LIVE OUTPUT badge (always visible) ─────────────────────────
+    Rectangle {
+        visible: !bridge.isLive
+        anchors { top: parent.top; topMargin: -1; left: parent.left; leftMargin: 12 }
+        width:   outputLbl.implicitWidth + 16
+        height:  22
+        radius:  4
+        color:   "#1F6FEB"
+        z:       2
+
+        Text {
+            id:    outputLbl
+            text:  "LIVE OUTPUT"
+            color: "#FFFFFF"
+            font.pixelSize: 10
+            font.weight:    Font.Bold
+            font.letterSpacing: 1.5
+            anchors.centerIn: parent
+        }
+    }
+
     // ── Placeholder when engine is off ─────────────────────────────
     Column {
         visible:          !bridge.engineRunning
         anchors.centerIn: parent
-        spacing:          12
+        spacing:          16
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text:  "🎬"
-            font.pixelSize: 48
+            font.pixelSize: 64
             opacity: 0.3
         }
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text:  "PROGRAM OUTPUT"
+            text:  "LIVE OUTPUT"
             color: "#484F58"
-            font.pixelSize: 14
+            font.pixelSize: 18
             font.weight:    Font.DemiBold
             font.letterSpacing: 2.0
         }
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text:  "Start the engine to begin"
+            text:  "Start the engine to display the switcher feed"
             color: "#30363D"
-            font.pixelSize: 11
+            font.pixelSize: 12
+        }
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text:  "Overlays • AI • Filters • Graphics"
+            color: "#30363D"
+            font.pixelSize: 10
+            font.letterSpacing: 1.0
         }
     }
 
@@ -100,7 +130,7 @@ Rectangle {
             }
         }
 
-        // Center "ON AIR" text
+        // Center status text when engine is running but not live
         Column {
             anchors.centerIn: parent
             spacing: 8
@@ -110,9 +140,15 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text:  "ENGINE RUNNING"
                 color: "#3FB950"
-                font.pixelSize: 13
+                font.pixelSize: 14
                 font.weight:    Font.DemiBold
                 font.letterSpacing: 2.0
+            }
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text:  "Switcher feed active • Ready for broadcast"
+                color: "#8B949E"
+                font.pixelSize: 11
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -129,8 +165,8 @@ Rectangle {
         visible:  bridge.engineRunning
         text:     bridge.fps + " fps"
         color:    "#3FB950"
-        font.pixelSize: 10
+        font.pixelSize: 11
         font.family:    "JetBrains Mono, Cascadia Code, monospace"
-        anchors { bottom: parent.bottom; right: parent.right; margins: 8 }
+        anchors { bottom: parent.bottom; right: parent.right; margins: 12 }
     }
 }
